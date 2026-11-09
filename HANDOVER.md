@@ -13,7 +13,8 @@ settled since; it wins over the brief where they differ.
 | GitHub | personal account **sprocket314**, public repo **sprocket314/nextpiece** (a free plan needs a public repo for Pages) |
 | Theme | **Blowfish**, Git submodule at `themes/blowfish`, pinned to tag **v3.9.0**, `shallow = true` (the theme repo is ~600 MB) |
 | Hugo | CI pins **0.167.0**, the newest version Blowfish v3.9.0 declares support for (`themes/blowfish/config.toml`, `[module.hugoVersion]`). A newer local Hugo works but prints a compatibility warning. Bump both together. |
-| Pages source | GitHub Actions; set via the API by Claude with the owner's OK |
+| Pages source | GitHub Actions; set via the API by Claude with the owner's OK. Custom domain `nextpiece.co.uk` set on the repo before the DNS change, as GitHub advises |
+| Commit identity | Repo-local git config: `sprocket314` with GitHub's no-reply address, so the global work email never lands in this public repo |
 | 3D viewer | Google `<model-viewer>` 4.4.0 with GLB, **self-hosted** in `assets/vendor/model-viewer/` and loaded only on pages that use the `model` shortcode. STL to GLB with `tools/stl2glb.py`. Chosen over three.js + STLLoader because it needs no custom JS. |
 | Images | Site-level `render-image` hook and shortcodes produce resized **WebP** with lazy loading (Blowfish's own hook keeps the original format). No JPEG fallback: every current browser reads WebP. |
 | Language | `en`, with `locale = "en-GB"` |

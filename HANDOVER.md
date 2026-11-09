@@ -23,6 +23,28 @@ settled since; it wins over the brief where they differ.
 Anything in a `model` viewer can be downloaded by any visitor: publishing a GLB publishes that
 design's geometry.
 
+## Status (2026-11-09)
+
+Live at **https://nextpiece.co.uk**. Let's Encrypt certificate for the apex and `www`, renewed
+automatically by GitHub; Enforce HTTPS is on; `www` and `sprocket314.github.io/nextpiece`
+redirect to the apex. The domain is verified on the sprocket314 account (TXT
+`_github-pages-challenge-sprocket314`).
+
+DNS at IONOS: four `A` and four `AAAA` records on `@` to GitHub Pages, `CNAME www` to
+`sprocket314.github.io`, plus IONOS's own mail records (MX, SPF, DKIM, DMARC, autodiscover), which
+must stay. Don't switch on IONOS's SSL: GitHub serves the certificate.
+
+Lessons from the switch-over:
+- IONOS refuses a `www` CNAME while `www` still has A/AAAA records; delete those first.
+  GitHub rejects `www` as an A record anyway.
+- GitHub's domain check kept stale DNS for about an hour (the old records' TTL). Once both names
+  passed, removing and re-adding the custom domain started the certificate at once.
+- The build takes its base URL from GitHub's Pages settings, so redeploy after changing the
+  domain or enforcing HTTPS.
+
+Not done yet (nice-to-haves from the brief): giscus comments, analytics. Both need accounts or
+settings only the owner can create.
+
 ---
 
 ## Original brief (verbatim)

@@ -1,0 +1,22 @@
+{{- /*
+  Fact box built from the post's front matter (see archetypes/puzzle/index.md).
+  Empty fields are left out. Usage: {{< puzzle-facts >}}
+*/ -}}
+{{- $p := .Page.Params -}}
+{{- $terms := dict "Designer" (.Page.GetTerms "designers") "Type" (.Page.GetTerms "puzzle_types") -}}
+<dl class="np-facts not-prose">
+  {{- with index $terms "Designer" }}
+  <dt>Designer</dt>
+  <dd>{{ range $i, $t := . }}{{ if $i }}, {{ end }}<a href="{{ $t.RelPermalink }}">{{ $t.LinkTitle }}</a>{{ end }}</dd>
+  {{- end }}
+  {{- with $p.maker }}<dt>Maker</dt><dd>{{ . | markdownify }}</dd>{{ end }}
+  {{- with $p.year }}<dt>Year</dt><dd>{{ . }}</dd>{{ end }}
+  {{- with index $terms "Type" }}
+  <dt>Type</dt>
+  <dd>{{ range $i, $t := . }}{{ if $i }}, {{ end }}<a href="{{ $t.RelPermalink }}">{{ $t.LinkTitle }}</a>{{ end }}</dd>
+  {{- end }}
+  {{- with $p.pieces }}<dt>Pieces</dt><dd>{{ . }}</dd>{{ end }}
+  {{- with $p.level }}<dt>Level</dt><dd>{{ . }}</dd>{{ end }}
+  {{- with $p.difficulty }}<dt>Difficulty</dt><dd>{{ . | markdownify }}</dd>{{ end }}
+  {{- with $p.acquired }}<dt>Acquired</dt><dd>{{ . | markdownify }}</dd>{{ end }}
+</dl>

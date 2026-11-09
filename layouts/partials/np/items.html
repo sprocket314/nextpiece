@@ -1,0 +1,40 @@
+{{- /*
+  Parses the inner text of the photos / disassembly shortcodes into a list of
+  page-bundle resources with captions. One item per line:
+
+      file-name.jpg | Caption, *Markdown* allowed
+
+  Params (dict):
+    page   the page whose bundle holds the files
+    inner  the shortcode's inner text
+    match  optional glob (e.g. "gallery/*") used when inner is empty
+    name   shortcode name, for error messages
+
+  Fails the build if a named file is not in the bundle, so typos never ship.
+*/ -}}
+{{- $page := .page -}}
+{{- $items := slice -}}
+{{- $inner := trim (.inner | default "") " \t\r\n" -}}
+
+{{- if $inner -}}
+  {{- range split $inner "\n" -}}
+    {{- $line := trim . " \t\r" -}}
+    {{- if $line -}}
+      {{- $parts := split $line "|" -}}
+      {{- $file := trim (index $parts 0) " \t" -}}
+      {{- $caption := "" -}}
+      {{- if gt (len $parts) 1 }}{{ $caption = trim (delimit (after 1 $parts) "|") " \t" }}{{ end -}}
+      {{- $res := $page.Resources.Get $file -}}
+      {{- if not $res -}}
+        {{- errorf "%s: shortcode %q names %q, which is not in the page bundle" $page.File.Path $.name $file -}}
+      {{- end -}}
+      {{- $items = $items | append (dict "res" $res "caption" $caption) -}}
+    {{- end -}}
+  {{- end -}}
+{{- else if .match -}}
+  {{- range ($page.Resources.Match .match).ByName -}}
+    {{- $items = $items | append (dict "res" . "caption" "") -}}
+  {{- end -}}
+{{- end -}}
+
+{{- return $items -}}

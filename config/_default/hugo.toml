@@ -1,0 +1,73 @@
+# -- Site Configuration --
+# Theme docs: https://blowfish.page/docs/configuration/
+
+theme = "blowfish"
+# The GitHub Actions build overrides this with the live Pages URL,
+# so the site also works at sprocket314.github.io/nextpiece/ before DNS is ready.
+baseURL = "https://nextpiece.co.uk/"
+defaultContentLanguage = "en"
+
+enableRobotsTXT = true
+summaryLength = 0
+
+buildDrafts = false
+buildFuture = false
+
+enableEmoji = true
+
+[pagination]
+  pagerSize = 100
+
+[imaging]
+  anchor = "Center"
+  resampleFilter = "Lanczos"
+  [imaging.webp]
+    quality = 80
+  [imaging.jpeg]
+    quality = 82
+
+# Puzzle-specific taxonomies. Front matter keys are the plurals on the right.
+[taxonomies]
+  tag = "tags"
+  designer = "designers"
+  puzzle_type = "puzzle_types"
+  series = "series"
+
+[sitemap]
+  changefreq = "weekly"
+  filename = "sitemap.xml"
+  priority = 0.5
+
+[outputs]
+  home = ["HTML", "RSS", "JSON"]
+
+[related]
+  threshold = 0
+  toLower = false
+
+    [[related.indices]]
+        name = "puzzle_types"
+        weight = 100
+
+    [[related.indices]]
+        name = "designers"
+        weight = 80
+
+    [[related.indices]]
+        name = "tags"
+        weight = 60
+
+    [[related.indices]]
+        name = "series"
+        weight = 50
+
+    [[related.indices]]
+        name = "date"
+        weight = 10
+
+# Hyphenated URLs for the multi-word taxonomy: /puzzle-types/board-burr/
+[permalinks]
+  [permalinks.taxonomy]
+    puzzle_types = "/puzzle-types/"
+  [permalinks.term]
+    puzzle_types = "/puzzle-types/:slug/"

@@ -1,0 +1,29 @@
+{{- /*
+  Numbered disassembly (or assembly) sequence. One step per line; each line is
+  an image, an animated GIF or a short video (.mp4/.webm) from the page bundle.
+
+    {{< disassembly >}}
+    step-1.jpg  | Slide the key piece up two units
+    step-2.gif  | The two halves separate
+    take-apart.mp4 | The whole sequence
+    {{< /disassembly >}}
+
+  Videos play muted and looped, like a GIF but far smaller. Keep each under ~5 MB.
+*/ -}}
+{{- $items := partial "np/items.html" (dict "page" .Page "inner" .Inner "name" "disassembly") -}}
+<ol class="np-steps not-prose">
+  {{- range $i, $it := $items }}
+  <li class="np-step">
+    <span class="np-step-num" aria-hidden="true">{{ add $i 1 }}</span>
+    <figure>
+      {{- if eq $it.res.MediaType.MainType "video" }}
+      <video src="{{ $it.res.RelPermalink }}" autoplay muted loop playsinline controls preload="metadata"
+        {{- with $it.caption }} aria-label="{{ . | plainify }}"{{ end }}></video>
+      {{- else }}
+      {{ partial "np/image.html" (dict "res" $it.res "alt" ($it.caption | plainify)) }}
+      {{- end }}
+      {{- with $it.caption }}<figcaption><span class="sr-only">Step {{ add $i 1 }}: </span>{{ . | markdownify }}</figcaption>{{ end }}
+    </figure>
+  </li>
+  {{- end }}
+</ol>

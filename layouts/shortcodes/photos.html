@@ -1,0 +1,23 @@
+{{- /*
+  Simple photo gallery from files in the page bundle.
+
+    {{< photos >}}
+    pieces.jpg    | All six pieces
+    assembled.jpg | Assembled
+    {{< /photos >}}
+
+    {{< photos match="gallery/*" cols="4" >}}{{< /photos >}}   every file in gallery/, by name
+
+  cols: 2, 3 (default) or 4 on wide screens; always 2 on phones. Click an image to zoom.
+*/ -}}
+{{- $items := partial "np/items.html" (dict "page" .Page "inner" .Inner "match" (.Get "match") "name" "photos") -}}
+{{- $cols := .Get "cols" | default "3" -}}
+{{- $sizes := printf "(min-width: 800px) %dpx, 50vw" (div 768 (int $cols)) -}}
+<div class="np-gallery np-cols-{{ $cols }} not-prose">
+  {{- range $items }}
+  <figure>
+    {{ partial "np/image.html" (dict "res" .res "alt" (.caption | plainify) "sizes" $sizes "class" "np-gallery-img") }}
+    {{- with .caption }}<figcaption>{{ . | markdownify }}</figcaption>{{ end }}
+  </figure>
+  {{- end }}
+</div>

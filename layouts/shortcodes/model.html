@@ -1,0 +1,37 @@
+{{- /*
+  Interactive 3D model (Google <model-viewer>) from a .glb in the page bundle.
+  The viewer script loads only on pages that use this shortcode
+  (see layouts/partials/extend-head-uncached.html).
+
+    {{< model src="pieces.glb" poster="pieces-poster.png" caption="The six pieces" >}}
+
+  src       .glb file in the bundle (required). Make it with tools/stl2glb.py.
+  poster    image shown before the model loads (optional, recommended)
+  alt       accessible description (default: "3D model: <page title>")
+  caption   text under the viewer, Markdown allowed (optional)
+  rotate    "false" to stop the slow auto-rotation
+*/ -}}
+{{- $src := .Get "src" -}}
+{{- $res := .Page.Resources.Get $src -}}
+{{- if not $res -}}
+  {{- errorf "%s: model src %q is not in the page bundle" .Page.File.Path $src -}}
+{{- end -}}
+{{- if gt (len $res.Content) 5242880 -}}
+  {{- warnf "%s: %s is %d bytes; keep models under ~5 MB (simplify or decimate the mesh)" .Page.File.Path $src (len $res.Content) -}}
+{{- end -}}
+{{- $alt := .Get "alt" | default (printf "3D model: %s" .Page.Title) -}}
+{{- $poster := "" -}}
+{{- with .Get "poster" -}}
+  {{- with $.Page.Resources.Get . }}{{ $poster = (.Process "resize 1200x webp").RelPermalink }}{{ end -}}
+{{- end -}}
+<figure class="np-model not-prose">
+  <model-viewer src="{{ $res.RelPermalink }}" alt="{{ $alt }}"
+    camera-controls touch-action="pan-y" interaction-prompt="auto"
+    {{- if ne (.Get "rotate") "false" }} auto-rotate auto-rotate-delay="2000" rotation-per-second="18deg"{{ end }}
+    shadow-intensity="0.7" exposure="1.05" environment-image="neutral" loading="lazy"
+    {{- with $poster }} poster="{{ . }}"{{ end }}></model-viewer>
+  <figcaption>
+    {{- with .Get "caption" }}{{ . | markdownify }} {{ end -}}
+    <span class="np-model-hint">Drag to rotate · scroll or pinch to zoom</span>
+  </figcaption>
+</figure>

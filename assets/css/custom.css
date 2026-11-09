@@ -1,0 +1,95 @@
+/* Site styles for the Next Piece shortcodes. Blowfish appends this file to its bundle.
+   Colours use the theme's palette variables (RGB triplets), so light/dark mode just works. */
+
+/* ---- photos (gallery) ---- */
+.np-gallery {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+  margin: 1.5rem 0;
+}
+@media (min-width: 640px) {
+  .np-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .np-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+.np-gallery figure { margin: 0; }
+.np-gallery-img {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border-radius: 0.375rem;
+  cursor: zoom-in;
+}
+.np-gallery figcaption,
+.np-steps figcaption,
+.np-model figcaption {
+  margin-top: 0.35rem;
+  font-size: 0.875rem;
+  line-height: 1.35;
+  color: rgb(var(--color-neutral-600));
+}
+.dark .np-gallery figcaption,
+.dark .np-steps figcaption,
+.dark .np-model figcaption { color: rgb(var(--color-neutral-400)); }
+
+/* ---- disassembly steps ---- */
+.np-steps {
+  list-style: none;
+  margin: 1.5rem 0;
+  padding: 0 0 0 2.75rem;
+  border-left: 2px solid rgb(var(--color-primary-200));
+}
+.dark .np-steps { border-left-color: rgb(var(--color-primary-800)); }
+.np-step { position: relative; margin: 0 0 1.75rem; }
+.np-step-num {
+  position: absolute;
+  left: -4.15rem;
+  top: 0;
+  width: 2.25rem;
+  height: 2.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  background: rgb(var(--color-primary-600));
+  color: #fff;
+  font-weight: 800;
+  font-size: 0.95rem;
+}
+.np-step figure { margin: 0; }
+.np-step img,
+.np-step video { width: 100%; max-width: 640px; height: auto; border-radius: 0.375rem; }
+
+/* ---- puzzle facts ---- */
+.np-facts {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 0.35rem 1.25rem;
+  margin: 1.5rem 0;
+  padding: 1rem 1.25rem;
+  border-radius: 0.5rem;
+  background: rgb(var(--color-neutral-100));
+  font-size: 0.95rem;
+}
+.dark .np-facts { background: rgb(var(--color-neutral-800)); }
+.np-facts dt { font-weight: 700; color: rgb(var(--color-neutral-700)); }
+.dark .np-facts dt { color: rgb(var(--color-neutral-300)); }
+.np-facts dd { margin: 0; }
+.np-facts a { color: rgb(var(--color-primary-700)); text-decoration: underline; text-underline-offset: 2px; }
+.dark .np-facts a { color: rgb(var(--color-primary-400)); }
+
+/* ---- 3D model viewer ---- */
+.np-model { margin: 1.5rem 0; }
+.np-model model-viewer {
+  display: block;
+  width: 100%;
+  height: auto; /* override model-viewer's built-in 150px so aspect-ratio applies */
+  aspect-ratio: 4 / 3;
+  max-height: 70vh;
+  border-radius: 0.5rem;
+  background: radial-gradient(circle at 50% 40%, rgb(var(--color-neutral-50)), rgb(var(--color-neutral-200)));
+}
+.dark .np-model model-viewer {
+  background: radial-gradient(circle at 50% 40%, rgb(var(--color-neutral-700)), rgb(var(--color-neutral-900)));
+}
+.np-model-hint { opacity: 0.75; white-space: nowrap; }

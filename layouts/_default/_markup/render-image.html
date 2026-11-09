@@ -1,0 +1,22 @@
+{{- /*
+  Markdown images: ![alt](file.jpg "optional caption")
+  Site-level replacement for Blowfish's hook, so bundle images become
+  resized WebP with lazy loading (Blowfish's own hook keeps the original format).
+  Remote URLs and files outside the bundle are passed through as plain <img>.
+*/ -}}
+{{- $u := urls.Parse .Destination -}}
+{{- $res := "" -}}
+{{- if not $u.IsAbs -}}
+  {{- $res = or (.PageInner.Resources.Get $u.Path) (resources.Get $u.Path) -}}
+{{- end -}}
+<figure
+  {{- range $k, $v := .Attributes -}}
+    {{- if $v }}{{ printf " %s=%q" $k ($v | transform.HTMLEscape) | safeHTMLAttr }}{{ end -}}
+  {{- end -}}>
+  {{- if $res -}}
+    {{- partial "np/image.html" (dict "res" $res "alt" .Text) -}}
+  {{- else -}}
+    <img class="my-0 rounded-md" src="{{ .Destination | safeURL }}" alt="{{ .Text }}" loading="lazy" decoding="async">
+  {{- end -}}
+  {{- with .Title }}<figcaption>{{ . | markdownify }}</figcaption>{{ end -}}
+</figure>

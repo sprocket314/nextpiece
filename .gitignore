@@ -1,0 +1,15 @@
+# Hugo output and caches
+/public/
+/resources/_gen/
+.hugo_build.lock
+
+# OS / editor
+.DS_Store
+*.swp
+
+# Interrupted stl2glb.py writes
+*.glb.tmp
+
+# Local working files (source STLs, render scenes)
+/.work/
+.claude/settings.local.json

@@ -1,0 +1,44 @@
+# Main menu (header). Ordered by weight.
+
+[[main]]
+  name = "Posts"
+  pageRef = "posts"
+  weight = 10
+
+[[main]]
+  name = "Puzzle types"
+  pageRef = "puzzle_types"
+  weight = 20
+
+[[main]]
+  name = "Designers"
+  pageRef = "designers"
+  weight = 30
+
+[[main]]
+  name = "Tags"
+  pageRef = "tags"
+  weight = 40
+
+[[main]]
+  name = "About"
+  pageRef = "about"
+  weight = 50
+
+[[main]]
+  identifier = "rss"
+  pre = "rss"
+  url = "/index.xml"
+  weight = 60
+
+# Footer menu.
+
+[[footer]]
+  name = "Series"
+  pageRef = "series"
+  weight = 10
+
+[[footer]]
+  name = "RSS"
+  url = "/index.xml"
+  weight = 20

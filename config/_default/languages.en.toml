@@ -1,0 +1,21 @@
+disabled = false
+locale = "en-GB"
+label = "English"
+weight = 1
+title = "Next Piece"
+
+[params]
+  displayName = "EN"
+  isoCode = "en-GB"
+  rtl = false
+  dateFormat = "2 January 2006"
+  description = "What will be the next piece? Designing and taking apart mechanical puzzles: burrs, kumiki and take-apart puzzles."
+  copyright = "© Next Piece"
+
+[params.author]
+  name = "Next Piece"
+  headline = "What will be the next piece?"
+  bio = "Burrs, interlocking kumiki, take-apart puzzles, and my own designs."
+  links = [
+    { github = "https://github.com/sprocket314" },
+  ]

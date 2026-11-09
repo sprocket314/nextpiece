@@ -1,0 +1,43 @@
+{{- /*
+  Responsive, lazy-loaded WebP <img> for an image resource from a page bundle.
+
+  Params (dict):
+    res    image resource (required)
+    alt    alt text
+    sizes  the <img sizes> hint (default: full article width)
+    class  CSS classes
+
+  JPEG/PNG/WebP are resized to several widths and re-encoded as WebP.
+  GIF (often animated) and SVG pass through untouched.
+*/ -}}
+{{- $res := .res -}}
+{{- $alt := .alt | default "" -}}
+{{- $sizes := .sizes | default "(min-width: 800px) 768px, 100vw" -}}
+{{- $class := .class | default "my-0 rounded-md" -}}
+{{- $sub := $res.MediaType.SubType -}}
+
+{{- if or (eq $sub "gif") (eq $sub "svg") (eq $sub "svg+xml") -}}
+  <img class="{{ $class }}" src="{{ $res.RelPermalink }}" alt="{{ $alt }}" loading="lazy" decoding="async"
+    {{- if eq $sub "gif" }} width="{{ $res.Width }}" height="{{ $res.Height }}"{{ end }}>
+{{- else -}}
+  {{- $w := $res.Width -}}
+  {{- $targets := slice -}}
+  {{- range slice 480 800 1280 1920 -}}
+    {{- if lt . $w }}{{ $targets = $targets | append . }}{{ end -}}
+  {{- end -}}
+  {{- if le $w 1920 }}{{ $targets = $targets | append $w }}{{ end -}}
+
+  {{- $srcset := slice -}}
+  {{- $fallback := "" -}}
+  {{- $largest := "" -}}
+  {{- range $targets -}}
+    {{- $img := $res.Process (printf "resize %dx webp" .) -}}
+    {{- $srcset = $srcset | append (printf "%s %dw" $img.RelPermalink .) -}}
+    {{- if or (not $fallback) (le . 800) }}{{ $fallback = $img }}{{ end -}}
+    {{- $largest = $img -}}
+  {{- end -}}
+
+  <img class="{{ $class }}" src="{{ $fallback.RelPermalink }}" srcset="{{ delimit $srcset ", " }}"
+    sizes="{{ $sizes }}" width="{{ $fallback.Width }}" height="{{ $fallback.Height }}"
+    alt="{{ $alt }}" loading="lazy" decoding="async" data-zoom-src="{{ $largest.RelPermalink }}">
+{{- end -}}

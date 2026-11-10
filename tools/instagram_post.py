@@ -13,6 +13,7 @@ Run by the deploy workflow after each deploy:
     * Instagram Login token  -> graph.instagram.com
     * Facebook Login token (a Page token, or a user token for a Page linked to the Instagram
       Creator/Business account) -> graph.facebook.com
+    * Unified login / business-portfolio token (its assigned Instagram accounts) -> graph.facebook.com
 
 Caption: post-specific `instagram_caption` from front matter if set, otherwise
 title, summary, a pointer to the blog, then hashtags from tags, puzzle types and
@@ -141,6 +142,14 @@ def find_account(token):
                 a = page["instagram_business_account"]
                 return FB_HOST, a["id"], a.get("username", "?")
         tried.append("no Facebook Page with a linked Instagram professional account")
+    except ApiError as e:
+        tried.append(str(e))
+    try:  # a business-portfolio (Unified login / system user) token: its assigned accounts
+        accts = call("GET", "me/assigned_instagram_accounts", token, FB_HOST,
+                     fields="id,username").get("data", [])
+        if accts:
+            return FB_HOST, accts[0]["id"], accts[0].get("username", "?")
+        tried.append("no Instagram account assigned to this token")
     except ApiError as e:
         tried.append(str(e))
     raise ApiError("the token reaches no Instagram account: " + " | ".join(tried))

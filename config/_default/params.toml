@@ -43,7 +43,7 @@ giteaDefaultServer = "https://git.fsfe.org"
 forgejoDefaultServer = "https://v11.next.forgejo.org"
 
 # Analytics: GoatCounter account code (the CODE in CODE.goatcounter.com). Empty = off.
-goatcounter = ""
+goatcounter = "nextpiece"
 
 [languageRedirect]
   enabled = false # Enable client-side language redirects for multilingual sites.
@@ -114,7 +114,7 @@ goatcounter = ""
   showWordCount = true
   # sharingLinks = [ "linkedin", "twitter", "bluesky", "mastodon", "reddit", "pinterest", "facebook", "email", "whatsapp", "telegram", "line"]
   showZenMode = false
-  showComments = false # giscus, see [giscus] below; turn on once the giscus app is installed on the repo
+  showComments = true # giscus, see [giscus] below
   # externalLinkForceNewTab = false # disable to allow external links in the same tab (defaults to true)
 
 [list]

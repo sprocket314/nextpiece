@@ -43,6 +43,15 @@ jobs:
                  --data-urlencode "access_token=${IG_ACCESS_TOKEN}")
           user=$(printf '%s' "$me" | jq -r '.username // empty')
           if [ -z "$user" ]; then
+            # Not an Instagram Login token. A Facebook Page token works on graph.facebook.com
+            # and never expires, so there is nothing to renew.
+            fb=$(curl -sS -G "https://graph.facebook.com/v27.0/me" \
+                   --data-urlencode "fields=name,instagram_business_account" \
+                   --data-urlencode "access_token=${IG_ACCESS_TOKEN}")
+            if [ -n "$(printf '%s' "$fb" | jq -r '.instagram_business_account.id // empty')" ]; then
+              echo "::notice::Facebook Page token for '$(printf '%s' "$fb" | jq -r .name)'; Page tokens do not expire, nothing to renew."
+              exit 0
+            fi
             echo "::error::The Instagram token does not work: $(printf '%s' "$me" | jq -c '.error // "no details"')"
             echo "::error::Generate a new token in the Meta App Dashboard and run: gh secret set IG_ACCESS_TOKEN"
             exit 1

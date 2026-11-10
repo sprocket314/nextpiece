@@ -24,6 +24,7 @@ jobs:
           }
           probe "Instagram host: me" "https://graph.instagram.com/v27.0/me?fields=user_id,username,account_type" '.'
           probe "Facebook host: me" "https://graph.facebook.com/v27.0/me?fields=id,name" '.'
+          probe "Facebook host: as a Page token" "https://graph.facebook.com/v27.0/me?fields=name,instagram_business_account%7Bid,username%7D" '.'
           probe "Facebook host: Pages with linked Instagram" "https://graph.facebook.com/v27.0/me/accounts?fields=name,instagram_business_account%7Bid,username%7D" '[.data[]? | {page: .name, instagram: .instagram_business_account}]'
           probe "Facebook host: assigned Instagram accounts" "https://graph.facebook.com/v27.0/me/assigned_instagram_accounts?fields=id,username" '[.data[]? | {id, username}]'
           probe "Facebook host: token permissions" "https://graph.facebook.com/v27.0/me/permissions" '[.data[]? | select(.status=="granted") | .permission]'

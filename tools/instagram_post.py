@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Post new blog posts to Instagram through the official API (Instagram Login, v27.0).
+"""Post new blog posts to Instagram through Meta's official API (v27.0).
 
 Run by the deploy workflow after each deploy:
 
@@ -8,8 +8,11 @@ Run by the deploy workflow after each deploy:
 - Reads the post list Hugo writes to /instagram.json (layouts/index.instagram.json).
 - Posts every post not yet recorded in data/instagram_posted.json: cover image + caption.
 - Records each success at once (atomic write), so a re-run never posts twice.
-- Needs IG_ACCESS_TOKEN (a long-lived Instagram User token for a Creator or Business
-  account) in the environment; without it, it reports what it would post and exits 0.
+- Needs IG_ACCESS_TOKEN in the environment; without it, it reports what it would post and
+  exits 0. Either kind of token works, detected automatically:
+    * Instagram Login token  -> graph.instagram.com
+    * Facebook Login token (a Page token, or a user token for a Page linked to the Instagram
+      Creator/Business account) -> graph.facebook.com
 
 Caption: post-specific `instagram_caption` from front matter if set, otherwise
 title, summary, a pointer to the blog, then hashtags from tags, puzzle types and
@@ -28,7 +31,8 @@ import urllib.request
 from datetime import datetime, timezone
 from pathlib import Path
 
-API = "https://graph.instagram.com/v27.0"
+IG_HOST = "https://graph.instagram.com/v27.0"
+FB_HOST = "https://graph.facebook.com/v27.0"
 STATE = Path(__file__).resolve().parent.parent / "data" / "instagram_posted.json"
 MAX_CAPTION = 2200
 MAX_TAGS = 30
@@ -38,11 +42,11 @@ class ApiError(RuntimeError):
     pass
 
 
-def call(method, path, token, **params):
+def call(method, path, token, host=IG_HOST, **params):
     """One Graph API call. The token goes in the body/query, never into messages."""
     params["access_token"] = token
     data = urllib.parse.urlencode(params).encode()
-    url = f"{API}/{path}"
+    url = f"{host}/{path}"
     if method == "GET":
         req = urllib.request.Request(f"{url}?{data.decode()}")
     else:
@@ -114,12 +118,40 @@ def wait_for_image(url, tries=20, pause=15):
     raise ApiError(f"cover image never became reachable: {url}")
 
 
-def publish(post, caption, token, ig_id):
+def find_account(token):
+    """Which host accepts this token, and which Instagram account does it reach?"""
+    tried = []
+    try:
+        me = call("GET", "me", token, IG_HOST, fields="user_id,username")
+        return IG_HOST, me["user_id"], me.get("username", "?")
+    except ApiError as e:
+        tried.append(str(e))
+    try:  # a Page token: the Page's linked Instagram account
+        me = call("GET", "me", token, FB_HOST, fields="instagram_business_account{id,username}")
+        if me.get("instagram_business_account"):
+            a = me["instagram_business_account"]
+            return FB_HOST, a["id"], a.get("username", "?")
+    except ApiError as e:
+        tried.append(str(e))
+    try:  # a user token: the first Page with a linked Instagram account
+        pages = call("GET", "me/accounts", token, FB_HOST,
+                     fields="name,instagram_business_account{id,username}").get("data", [])
+        for page in pages:
+            if page.get("instagram_business_account"):
+                a = page["instagram_business_account"]
+                return FB_HOST, a["id"], a.get("username", "?")
+        tried.append("no Facebook Page with a linked Instagram professional account")
+    except ApiError as e:
+        tried.append(str(e))
+    raise ApiError("the token reaches no Instagram account: " + " | ".join(tried))
+
+
+def publish(post, caption, token, ig_id, host):
     wait_for_image(post["image"])
-    container = call("POST", f"{ig_id}/media", token, image_url=post["image"], caption=caption,
+    container = call("POST", f"{ig_id}/media", token, host, image_url=post["image"], caption=caption,
                      alt_text=post.get("alt", "")[:1000])["id"]
     for _ in range(30):  # Meta: images are usually FINISHED at once; allow up to ~5 minutes
-        status = call("GET", container, token, fields="status_code").get("status_code")
+        status = call("GET", container, token, host, fields="status_code").get("status_code")
         if status == "FINISHED":
             break
         if status in ("ERROR", "EXPIRED"):
@@ -127,8 +159,8 @@ def publish(post, caption, token, ig_id):
         time.sleep(10)
     else:
         raise ApiError("media container still not ready after 5 minutes")
-    media_id = call("POST", f"{ig_id}/media_publish", token, creation_id=container)["id"]
-    link = call("GET", media_id, token, fields="permalink").get("permalink", "")
+    media_id = call("POST", f"{ig_id}/media_publish", token, host, creation_id=container)["id"]
+    link = call("GET", media_id, token, host, fields="permalink").get("permalink", "")
     return media_id, link
 
 
@@ -156,11 +188,14 @@ def main():
     if not token and not args.dry_run:
         print("::notice::IG_ACCESS_TOKEN is not set, so nothing was posted (dry run).")
 
-    ig_id = None
+    ig_id = host = None
     if not dry:
-        me = call("GET", "me", token, fields="user_id,username")
-        ig_id = me["user_id"]
-        print(f"Instagram: posting as @{me.get('username', '?')}")
+        try:
+            host, ig_id, username = find_account(token)
+        except ApiError as e:
+            print(f"::error::{e}")
+            return 1
+        print(f"Instagram: posting as @{username} via {host.split('/')[2]}")
 
     failures = 0
     for post in todo[: args.max]:
@@ -169,7 +204,7 @@ def main():
             print(f"--- would post {post['slug']}\nimage: {post['image']}\n{caption}\n")
             continue
         try:
-            media_id, link = publish(post, caption, token, ig_id)
+            media_id, link = publish(post, caption, token, ig_id, host)
         except ApiError as e:
             failures += 1
             print(f"::error::Instagram post for {post['slug']} failed: {e}")

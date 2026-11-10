@@ -130,6 +130,33 @@ Ishino's renders; every puzzle links to its page on his site. To take the atlas 
 - **Analytics** use [GoatCounter](https://www.goatcounter.com/): no cookies, no personal data.
   Set `goatcounter = "CODE"` in `params.toml`; only production builds count visits.
 
+## Instagram
+
+Each deploy posts new blog posts to Instagram on its own: the cover image (as JPEG, cropped
+into Instagram's 4:5 to 1.91:1 range if needed) and a caption made of the title, the summary,
+"Read the full post on nextpiece.co.uk (link in bio)" and hashtags from the post's tags and
+puzzle types plus `[instagram] hashtags` in `params.toml`.
+
+- **Skip a post:** `instagram: false` in its front matter. **Own caption:** `instagram_caption:`.
+- **Already posted** posts are listed in `data/instagram_posted.json` (the workflow commits it),
+  so re-runs never post twice. Delete a post's entry there to post it again.
+- **At most 2 posts per deploy**; any others go out with the next one.
+- **No token, no posting:** without the `IG_ACCESS_TOKEN` secret the step only logs what it
+  would post.
+- **Preview a caption locally:** `hugo && python3 tools/instagram_post.py --feed public/instagram.json --dry-run`
+
+How it connects: Instagram's official API (Instagram Login, `graph.instagram.com`) needs a
+**Creator or Business** Instagram account and a Meta developer app. The token lasts 60 days;
+the **Renew Instagram token** workflow renews it on the 1st and 15th of each month and stores
+it back as a secret, using `SECRETS_PAT`, a fine-grained GitHub token for this repo with
+*Secrets: read and write*. If renewal ever fails (the workflow fails and GitHub emails you),
+generate a new token in the Meta App Dashboard and run `gh secret set IG_ACCESS_TOKEN`.
+
+| Secret | What it is |
+|---|---|
+| `IG_ACCESS_TOKEN` | Instagram User token from the Meta App Dashboard (Instagram > API setup with Instagram login > Generate access tokens) |
+| `SECRETS_PAT` | Fine-grained GitHub token: only `sprocket314/nextpiece`, permission *Secrets: read and write* |
+
 ## Preview locally
 
 ```bash
@@ -186,4 +213,7 @@ If it fails, the log of its "Build with Hugo" step names the file and line.
 | `layouts/partials/extend-head.html` | GoatCounter analytics script (production only) |
 | `layouts/atlas/single.html`, `assets/atlas/` | The Burr Atlas page |
 | `tools/build_atlas.py` | Copies the atlas data in from `burr_design/catalogue` |
+| `layouts/index.instagram.json` | `/instagram.json`: posts with Instagram-ready covers |
+| `tools/instagram_post.py` | Posts new blog posts to Instagram after each deploy |
+| `.github/workflows/instagram-token.yml` | Renews the Instagram token twice a month |
 | `assets/icons/makerworld.svg` | Generic cube icon for the MakerWorld profile link (Blowfish has none) |

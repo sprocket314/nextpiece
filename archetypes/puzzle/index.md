@@ -20,6 +20,8 @@ series: []                  # for multi-part posts, e.g. ["Designing a board bur
 series_order:               # 1, 2, 3 ... within the series
 featureimage: "cover.jpg"   # cover image in this folder: hero, card thumbnail and social card
 featureimagecaption: ""
+instagram: true             # false = don't post this one to Instagram
+instagram_caption: ""       # optional: your own caption instead of title + summary + hashtags
 ---
 
 {{< puzzle-facts >}}

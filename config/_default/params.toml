@@ -173,6 +173,11 @@ goatcounter = "nextpiece"
   category = "Announcements"
   categoryId = "DIC_kwDOVokQhM4DKy4u"
 
+# Instagram auto-posting (tools/instagram_post.py). Hashtags added to every caption,
+# after the post's own tags and puzzle types. Instagram allows 30 per post.
+[instagram]
+  hashtags = ["mechanicalpuzzle", "puzzledesign", "burrpuzzle", "3dprinting"]
+
 [firebase]
   # apiKey = "XXXXXX"
   # authDomain = "XXXXXX"

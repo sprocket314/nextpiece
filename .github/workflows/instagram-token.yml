@@ -1,0 +1,63 @@
+# Keep the Instagram access token alive. Long-lived tokens last 60 days and can be renewed
+# for another 60 once they are a day old; this renews it twice a month and stores the new
+# one back in the IG_ACCESS_TOKEN secret.
+#
+# Needs two repository secrets (see README, "Instagram"):
+#   IG_ACCESS_TOKEN  the Instagram token (generated in the Meta App Dashboard)
+#   SECRETS_PAT      a fine-grained GitHub token for this repo with "Secrets: read and write"
+#
+# It also commits the renewal date to data/instagram_token.json. That keeps the repo active:
+# GitHub switches off scheduled workflows in public repos after 60 days without commits.
+name: Renew Instagram token
+
+on:
+  schedule:
+    - cron: "17 6 1,15 * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: "instagram-token"
+  cancel-in-progress: false
+
+jobs:
+  renew:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+      - name: Renew the token and store it
+        env:
+          IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
+          GH_TOKEN: ${{ secrets.SECRETS_PAT }}
+        run: |
+          if [ -z "$IG_ACCESS_TOKEN" ] || [ -z "$GH_TOKEN" ]; then
+            echo "::notice::IG_ACCESS_TOKEN or SECRETS_PAT is not set; nothing to renew."
+            exit 0
+          fi
+          resp=$(curl -sS -G "https://graph.instagram.com/refresh_access_token" \
+                   --data-urlencode "grant_type=ig_refresh_token" \
+                   --data-urlencode "access_token=${IG_ACCESS_TOKEN}")
+          new=$(printf '%s' "$resp" | jq -r '.access_token // empty')
+          if [ -z "$new" ]; then
+            echo "::error::Instagram refused to renew the token: $(printf '%s' "$resp" | jq -c '.error // "no details"')"
+            echo "::error::Generate a new token in the Meta App Dashboard and run: gh secret set IG_ACCESS_TOKEN"
+            exit 1
+          fi
+          echo "::add-mask::$new"
+          gh secret set IG_ACCESS_TOKEN --repo "$GITHUB_REPOSITORY" --body "$new"
+          days=$(( $(printf '%s' "$resp" | jq -r '.expires_in') / 86400 ))
+          mkdir -p data
+          printf '{\n  "renewed": "%s",\n  "valid_days": %s\n}\n' "$(date -u +%Y-%m-%d)" "$days" > data/instagram_token.json
+          echo "Token renewed; valid for ${days} days."
+      - name: Record the renewal
+        run: |
+          if [ -z "$(git status --porcelain -- data/instagram_token.json)" ]; then exit 0; fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/instagram_token.json
+          git commit -m "Record Instagram token renewal [skip ci]"
+          git pull --rebase --quiet
+          git push

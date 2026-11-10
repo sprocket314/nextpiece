@@ -39,7 +39,14 @@ enableEmoji = true
   priority = 0.5
 
 [outputs]
-  home = ["HTML", "RSS", "JSON"]
+  home = ["HTML", "RSS", "JSON", "instagram"]
+
+# /instagram.json: the post list the Instagram publishing step reads after each deploy
+[outputFormats.instagram]
+  mediaType = "application/json"
+  baseName = "instagram"
+  isPlainText = true
+  notAlternative = true
 
 [related]
   threshold = 0

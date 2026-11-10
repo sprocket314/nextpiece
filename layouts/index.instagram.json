@@ -1,0 +1,44 @@
+{{- /*
+  /instagram.json: published posts with an Instagram-ready cover, read by
+  tools/instagram_post.py after each deploy. Instagram takes JPEG only, with an aspect
+  ratio between 4:5 and 1.91:1, so the cover is cropped into that range if needed.
+  A post is left out with `instagram: false` in its front matter.
+*/ -}}
+{{- $items := slice -}}
+{{- range where site.RegularPages "Section" "posts" -}}
+  {{- if ne .Params.instagram false -}}
+    {{- $page := . -}}
+    {{- $cover := "" -}}
+    {{- with .Params.featureimage }}{{ $cover = $page.Resources.Get . }}{{ end -}}
+    {{- if not $cover -}}
+      {{- range slice "*feature*" "*cover*" "*thumbnail*" -}}
+        {{- if not $cover }}{{ $cover = ($page.Resources.ByType "image").GetMatch . }}{{ end -}}
+      {{- end -}}
+    {{- end -}}
+    {{- with $cover -}}
+      {{- $ratio := div (float .Width) .Height -}}
+      {{- $jpg := "" -}}
+      {{- if lt $ratio 0.8 -}}
+        {{- $jpg = .Fill "1080x1350 Center jpg q90" -}}
+      {{- else if gt $ratio 1.91 -}}
+        {{- $jpg = .Fill "1440x754 Center jpg q90" -}}
+      {{- else if gt .Width 1440 -}}
+        {{- $jpg = .Resize "1440x jpg q90" -}}
+      {{- else -}}
+        {{- $jpg = .Resize (printf "%dx jpg q90" .Width) -}}
+      {{- end -}}
+      {{- $items = $items | append (dict
+          "slug" (path.Base (strings.TrimSuffix "/" $page.RelPermalink))
+          "title" $page.Title
+          "summary" ($page.Summary | plainify | htmlUnescape | strings.TrimSpace)
+          "caption" ($page.Params.instagram_caption | default "")
+          "url" $page.Permalink
+          "date" ($page.Date.Format "2006-01-02T15:04:05Z07:00")
+          "tags" ($page.Params.tags | default slice)
+          "puzzle_types" ($page.Params.puzzle_types | default slice)
+          "image" $jpg.Permalink
+          "alt" ($page.Params.featureimagecaption | default $page.Title)) -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- dict "site" site.Title "home" site.Home.Permalink "hashtags" (site.Params.instagram.hashtags | default slice) "posts" $items | jsonify (dict "indent" "  ") -}}

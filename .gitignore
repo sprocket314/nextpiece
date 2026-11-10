@@ -13,3 +13,6 @@
 # Local working files (source STLs, render scenes)
 /.work/
 .claude/settings.local.json
+
+# Raw material for new posts (photos, STLs, notes); never published
+/inbox/

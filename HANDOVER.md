@@ -32,6 +32,22 @@ design's geometry.
 | Instagram | Automatic posting of each new post via Meta's official API (owner's choice of option 2, 2026-11-10), not by logging in as the owner (against Instagram's terms; risks the account). Meta app *Next Piece* in business portfolio *Next Piece*, **Unified login** (Meta's current route; the Facebook-login setup is legacy, the Instagram-login setup unavailable to new apps). Token: system-user token from the dashboard, secret `IG_ACCESS_TOKEN`; account ID in repo variable `IG_USER_ID`. Verified 2026-11-10: token reaches @sprocket314 and created an unpublished test container. No renewal needed; a workflow checks it on the 1st and 15th. The owner sets secrets; Claude never handles their values. The example post is marked as skipped. The portfolio also has a second, unused system user named `sprocket314` (Develop app role, Instagram Content access, full access to the Next Piece Page, no tokens), kept by the owner's choice; posting does not use it. |
 | Analytics | GoatCounter (code `nextpiece`), production builds only. Chosen over Cloudflare Web Analytics: no Cloudflare account needed, no cookies. |
 
+## How posts get written (owner's decision, 2026-11-10)
+
+The owner writes **through Claude**, not in an editor or CMS. The routine:
+
+1. The owner gives the topic or rough notes and drops raw material (photos, STLs, OpenSCAD
+   files) into `inbox/<slug>/` in this repo folder (gitignored, never published), or names a path.
+2. Claude creates the post with `hugo new content --kind puzzle posts/<slug>`, keeps `draft: true`,
+   writes it in the owner's voice from their notes (no invented facts: ask when a detail is
+   missing), adds photos (JPEG, about 2000 px), a `model` viewer (`tools/stl2glb.py`) and
+   disassembly steps where they fit, and fills in the front matter.
+3. Claude previews it locally (`hugo server --buildDrafts`, launch config "hugo") and shows the
+   owner; it build-checks with the CI Hugo version.
+4. **Only on the owner's explicit OK**: set `draft: false`, commit, push. The deploy publishes it
+   and posts it to Instagram (cover + caption) automatically, so the OK covers both. Then Claude
+   confirms the live page and the Instagram step in the run log.
+
 ## Status (2026-11-09)
 
 Live at **https://nextpiece.co.uk**. Let's Encrypt certificate for the apex and `www`, renewed

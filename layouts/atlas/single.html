@@ -34,7 +34,9 @@
 <link rel="stylesheet" href="{{ $css.RelPermalink }}" integrity="{{ $css.Data.Integrity }}">
 {{- partial "extend-head.html" . }}
 </head>
-<body>
+{{- /* Ishino's assembled-shape renders, one sprite sheet, converted to WebP at build time */ -}}
+{{- $sprite := "" }}{{ with .Resources.Get "shapes.png" }}{{ $sprite = (.Process "webp q88 drawing").RelPermalink }}{{ end }}
+<body data-sprite="{{ $sprite }}">
 
 <nav class="sitebar" aria-label="Site">
   <div class="wrap">
@@ -76,6 +78,7 @@
   <div class="tablewrap">
     <table>
       <thead><tr>
+        <th>Assembled</th>
         <th>Pieces</th>
         <th data-sort="lvl" data-dir="desc">Level</th>
         <th data-sort="name">Puzzle</th>
@@ -96,9 +99,9 @@
 <div class="ov" id="ov" hidden><div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-title"></div></div>
 
 <footer class="wrap">
-  <p>All puzzle data (names, designers, years, levels, envelopes and piece codes) comes from
-    <a href="https://puzzlewillbeplayed.com/" target="_blank" rel="noopener">puzzlewillbeplayed.com</a>
-    by Keiichiro Ishino, the reference for interlocking puzzles, and is used with his kind permission.
+  <p>All puzzle data (names, designers, years, levels, envelopes and piece codes) and the assembled
+    images come from <a href="https://puzzlewillbeplayed.com/" target="_blank" rel="noopener">puzzlewillbeplayed.com</a>
+    by Keiichiro Ishino, the reference for interlocking puzzles, and are used with his kind permission.
     Every puzzle links back to its page there.
     The classification by piece type and the piece drawings, generated from the site's polycube codes,
     are this atlas's own.</p>
@@ -107,6 +110,7 @@
 </footer>
 
 <script id="DATA" type="application/json">{{ with .Resources.Get "data.json" }}{{ .Content | safeJS }}{{ end }}</script>
+<script id="SHIDX" type="application/json">{{ with .Resources.Get "shapes_index.json" }}{{ .Content | safeJS }}{{ end }}</script>
 <script id="PIECES" type="application/json">{{ with .Resources.Get "pieces.json" }}{{ .Content | safeJS }}{{ end }}</script>
 {{- $js := resources.Get "atlas/atlas.js" | resources.Minify | resources.Fingerprint "sha384" }}
 <script src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}"></script>

@@ -3,13 +3,14 @@
 
     python3 tools/build_atlas.py [path/to/burr_design/catalogue]
 
-Copies data.json (one row per puzzle) and pieces.json (piece geometry) into the
-content/atlas/ page bundle, compacted. The page itself is layouts/atlas/single.html with
-assets/atlas/atlas.{css,js}. Ishino's assembled-shape renders (shapes.png) are deliberately
-NOT copied: the public atlas draws only pieces generated from the polycube codes.
+Copies data.json (one row per puzzle), pieces.json (piece geometry), and the sprite of
+Keiichiro Ishino's assembled-shape renders (shapes.png + shapes_index.json) into the
+content/atlas/ page bundle. Published with his permission (2026-11-10). The page itself is
+layouts/atlas/single.html with assets/atlas/atlas.{css,js}; Hugo converts the sprite to WebP.
 """
 import json
 import os
+import shutil
 import sys
 import tempfile
 from pathlib import Path
@@ -38,4 +39,9 @@ assert all(r[F["uri"]] for r in data["rows"]), "every puzzle needs its puzzlewil
 DST.mkdir(parents=True, exist_ok=True)
 write("data.json", data)
 write("pieces.json", {k: v for k, v in pieces.items() if v})
+shapes = json.loads((SRC / "shapes_index.json").read_text())
+write("shapes_index.json", shapes)
+shutil.copyfile(SRC / "shapes.png", DST / "shapes.png")
+size = (DST / "shapes.png").stat().st_size
+print(f"wrote {DST / 'shapes.png'}  {size / 1e6:.2f} MB" + ("  WARNING: over 5 MB" if size > WARN_BYTES else ""))
 print(f"{len(data['rows']):,} puzzles, {sum(1 for v in pieces.values() if v):,} with piece geometry")

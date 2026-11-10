@@ -54,6 +54,17 @@ const F={}; D.fields.forEach((n,i)=>F[n]=i);
 const ROWS=D.rows;
 const $=id=>document.getElementById(id);
 
+/* ---------- assembled-shape images: Ishino's renders packed in one sprite ---------- */
+const SH=JSON.parse($('SHIDX').textContent);
+if(document.body.dataset.sprite)
+  document.documentElement.style.setProperty('--sprite',`url("${document.body.dataset.sprite}")`);
+function shapeStyle(code,px){
+  const p=SH.index[code]; if(!p||!document.body.dataset.sprite) return null;
+  const k=px/SH.cell;
+  return `background-size:${(SH.cols*SH.cell*k).toFixed(1)}px ${(SH.rows*SH.cell*k).toFixed(1)}px;`+
+         `background-position:${(-p[0]*SH.cell*k).toFixed(1)}px ${(-p[1]*SH.cell*k).toFixed(1)}px`;
+}
+
 /* ---------- header stats, computed from the data ---------- */
 (function stats(){
   const years=ROWS.map(r=>r[F.year]).filter(y=>y>=1800);
@@ -204,13 +215,21 @@ function render(){
         (r[F.gauge]&&r[F.gauge]!=='?'?`<div class="num" style="font-size:10.5px;color:var(--faint)">${r[F.gauge]}</div>`:'')
       : '<span style="color:var(--faint)">&mdash;</span>';
     const href=SITE+r[F.uri];
+    const shst=shapeStyle(r[F.shape],48);
+    const shcell=shst
+      ? `<div class="shape" style="${shst}" role="button" tabindex="0" data-uri="${esc(r[F.uri])}"
+           data-name="${esc(r[F.name])}" aria-label="Assembled ${esc(r[F.name])}: show its pieces"
+           title="${esc(r[F.shape]||'')} assembled"></div>`
+      : `<div class="shape none" title="no assembled image"></div>`;
+    const mv=esc(r[F.moves]||'').replace(/\./g,'.<wbr>');
     return `<tr>
+      <td class="shp">${shcell}</td>
       <td class="th"><div class="thumb" data-uri="${esc(r[F.uri])}" data-name="${esc(r[F.name])}"
            role="button" tabindex="0" aria-label="Show the pieces of ${esc(r[F.name])}"></div></td>
       <td class="lvl">${lvl||'—'}<i><b style="width:${pct}%"></b></i></td>
       <td class="nm"><a href="${esc(href)}" target="_blank" rel="noopener"
            title="Open on puzzlewillbeplayed.com">${esc(r[F.name])}<span class="ext" aria-hidden="true">↗</span></a>
-        <div class="num" style="color:var(--faint);font-size:11px">${esc(r[F.moves]||'')}</div></td>
+        <div class="mv">${mv}</div></td>
       <td><span class="tag bsn" title="${esc(r[F.bsn]||'')}">${esc(shortBSN(r))}</span>
         <div style="color:var(--faint);font-size:11px;margin-top:2px">${FAM_LABEL[r[F.fam]]||r[F.fam]}</div></td>
       <td class="num">${box}${vol}</td>
@@ -374,14 +393,17 @@ function openSheet(uri,name){
       cards+=`<div class="pcard"><div class="cap" style="padding:34px 0"><b>${p.L}&times;${p.s[0]}&times;${p.s[1]}</b><br>`+
              `stick stock${p.k>1?`<br>&times;${p.k}`:''}<br><span style="color:var(--faint)">profile not drawn</span></div></div>`; }
   }
+  const bigst=row?shapeStyle(row[F.shape],160):null;
+  const big=bigst?`<div class="asm"><div class="shape-lg" style="${bigst}" role="img"
+      aria-label="${esc(name)}, assembled"></div><div class="mono">assembled &middot; ${esc(row[F.shape])}</div></div>`:'';
   sheet.innerHTML=`<button class="act closeb" type="button" id="closeb">Close</button>`+
-    `<h2 id="sheet-title">${esc(name)}</h2><div class="meta">${meta}<br>`+
+    `<h2 id="sheet-title">${esc(name)}</h2>${big}<div class="meta">${meta}<br>`+
     `<a href="${esc(SITE+uri)}" target="_blank" rel="noopener">See this puzzle on puzzlewillbeplayed.com ↗</a></div>`+
     (cards?`<div class="grid">${cards}</div>`:`<p style="color:var(--muted)">No piece geometry for this puzzle yet.</p>`)+
     (undrawn?`<div class="note">${undrawn} piece(s) are listed in the classic burr-stick code. Their length and
       cross-section are exact, but the notch pattern is not drawn here rather than guessed.</div>`:'')+
-    `<div class="note">Pieces are drawn from the exact polycube codes published on puzzlewillbeplayed.com.
-      Their positions in the assembled puzzle are not published, so the assembly is not shown.</div>`;
+    `<div class="note">Pieces are drawn from the exact polycube codes published on puzzlewillbeplayed.com;
+      the assembled image is Keiichiro Ishino's render from the same site.</div>`;
   lastFocus=document.activeElement;
   ov.hidden=false; document.body.style.overflow='hidden';
   $('closeb').addEventListener('click',closeSheet);
@@ -391,11 +413,11 @@ function closeSheet(){ ov.hidden=true; document.body.style.overflow=''; if(lastF
 ov.addEventListener('click',e=>{ if(e.target===ov) closeSheet(); });
 document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&!ov.hidden) closeSheet(); });
 $('rows').addEventListener('click',e=>{
-  const t=e.target.closest('.thumb'); if(!t) return;
+  const t=e.target.closest('.thumb,.shape[data-uri]'); if(!t) return;
   openSheet(t.dataset.uri,t.dataset.name);
 });
 $('rows').addEventListener('keydown',e=>{
-  const t=e.target.closest('.thumb'); if(!t) return;
+  const t=e.target.closest('.thumb,.shape[data-uri]'); if(!t) return;
   if(e.key==='Enter'||e.key===' '){ e.preventDefault(); openSheet(t.dataset.uri,t.dataset.name); }
 });
 

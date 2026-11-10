@@ -107,6 +107,8 @@ Published with his permission (email of 2026-11-10).
 It is a standalone page, outside the theme's layout:
 
 - data: `content/atlas/data.json` and `pieces.json`, inlined into the page at build time
+- assembled images: `content/atlas/shapes.png` (Ishino's renders in one sprite, indexed by
+  `shapes_index.json`); Hugo serves it as WebP (about 1.9 MB)
 - page: `layouts/atlas/single.html`, with `assets/atlas/atlas.css` and `atlas.js`
 
 To refresh the data after a new crawl in `~/claude/burr_design/catalogue`:
@@ -115,9 +117,8 @@ To refresh the data after a new crawl in `~/claude/burr_design/catalogue`:
 python3 tools/build_atlas.py
 ```
 
-Then preview and commit. The public atlas does not include Ishino's assembled-shape renders
-(`shapes.png`); pieces are drawn from the polycube codes, and every puzzle links to its page
-on his site. To take the atlas down, delete `content/atlas/` and its entry in
+Then preview and commit. Pieces are drawn from the polycube codes; the assembled images are
+Ishino's renders; every puzzle links to its page on his site. To take the atlas down, delete `content/atlas/` and its entry in
 `config/_default/menus.en.toml`.
 
 ## Comments and analytics

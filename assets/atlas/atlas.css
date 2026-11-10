@@ -39,7 +39,7 @@ body{margin:0;background:var(--paper);color:var(--ink);
   font-family:var(--sans);font-size:14px;line-height:1.5;
   -webkit-font-smoothing:antialiased}
 .mono{font-family:var(--mono)}
-.wrap{max-width:1240px;margin:0 auto;padding:0 20px}
+.wrap{max-width:1480px;margin:0 auto;padding:0 20px}
 a{color:var(--accent-ink)}
 
 /* ---- site bar: back to the blog ---- */
@@ -103,18 +103,21 @@ button.act:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .tablewrap{overflow-x:auto}
 table{width:100%;border-collapse:collapse;font-size:13px}
 thead th{text-align:left;font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;
-  color:var(--faint);font-weight:600;padding:9px 10px;border-bottom:1px solid var(--line);
+  color:var(--faint);font-weight:600;padding:9px 8px;border-bottom:1px solid var(--line);
   white-space:nowrap;user-select:none}
 thead th[data-sort]{cursor:pointer}
 thead th[data-sort]:hover{color:var(--accent)}
 thead th[data-dir]{color:var(--accent)}
 tbody tr{border-bottom:1px solid var(--line)}
 tbody tr:hover{background:var(--surface)}
-td{padding:7px 10px;vertical-align:top}
+td{padding:7px 8px;vertical-align:top}
 td.nm{font-weight:500}
 td.nm a{color:inherit;text-decoration:none;border-bottom:1px solid var(--line2)}
 td.nm a:hover{color:var(--accent-ink);border-color:var(--accent)}
 td.nm .ext{color:var(--faint);font-size:11px;margin-left:3px}
+td.nm{min-width:170px;max-width:260px}
+td.nm .mv{font-family:var(--mono);font-variant-numeric:tabular-nums;color:var(--faint);font-size:11px;
+  line-height:1.35;overflow-wrap:anywhere}
 .tag{font-family:var(--mono);font-size:11.5px;padding:1px 6px;border-radius:2px;
   background:var(--accent-soft);color:var(--accent-ink);white-space:nowrap}
 .tag.bsn{white-space:nowrap;display:inline-block;line-height:1.35}
@@ -133,8 +136,21 @@ td.nm .ext{color:var(--faint);font-size:11px;margin-left:3px}
 .thumb svg polygon,.pcard svg polygon{vector-effect:non-scaling-stroke;stroke-width:.8px;stroke-opacity:.7}
 .pcard svg polygon{stroke-width:1px}
 
+/* assembled-shape images (Ishino's renders, one sprite sheet) */
+td.shp{width:56px}
+.shape{width:48px;height:48px;background-repeat:no-repeat;background-image:var(--sprite);
+  background-color:#fff;border-radius:3px;border:1px solid var(--line);cursor:pointer}
+.shape:hover{border-color:var(--accent)}
+.shape:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.shape.none{background:none;border:1px dashed var(--line2);cursor:default}
+.shape-lg{width:160px;height:160px;background-repeat:no-repeat;background-image:var(--sprite);
+  background-color:#fff;border:1px solid var(--line);border-radius:4px}
+.asm{float:right;margin:0 0 12px 18px;text-align:center}
+.asm .mono{font-size:10.5px;color:var(--faint);margin-top:5px}
+@media (max-width:640px){.asm{float:none;margin:0 0 12px}}
+
 /* thumbnails */
-td.th{width:132px}
+td.th{width:128px}
 .thumb{display:flex;gap:3px;align-items:flex-end;min-height:34px;cursor:pointer;
   border:1px solid transparent;border-radius:3px;padding:2px}
 .thumb:hover{border-color:var(--accent)}

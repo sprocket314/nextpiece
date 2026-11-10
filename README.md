@@ -145,17 +145,25 @@ puzzle types plus `[instagram] hashtags` in `params.toml`.
   would post.
 - **Preview a caption locally:** `hugo && python3 tools/instagram_post.py --feed public/instagram.json --dry-run`
 
-How it connects: Instagram's official API (Instagram Login, `graph.instagram.com`) needs a
-**Creator or Business** Instagram account and a Meta developer app. The token lasts 60 days;
-the **Renew Instagram token** workflow renews it on the 1st and 15th of each month and stores
-it back as a secret, using `SECRETS_PAT`, a fine-grained GitHub token for this repo with
-*Secrets: read and write*. If renewal ever fails (the workflow fails and GitHub emails you),
-generate a new token in the Meta App Dashboard and run `gh secret set IG_ACCESS_TOKEN`.
+How it connects (set up 2026-11-10): Instagram's official API through the Meta app **Next Piece**
+(App ID 1870910057407932, business portfolio *Next Piece*), use case *Manage messaging & content on
+Instagram*, **API setup with Unified login**. The token was generated there for the Instagram
+account and is a business *system-user* token that works on `graph.facebook.com` and does not need
+renewing. [Meta reports; checked twice a month] The Instagram account needs to be a Creator or
+Business account.
 
-| Secret | What it is |
+| Setting | What it is |
 |---|---|
-| `IG_ACCESS_TOKEN` | Instagram User token from the Meta App Dashboard (Instagram > API setup with Instagram login > Generate access tokens) |
-| `SECRETS_PAT` | Fine-grained GitHub token: only `sprocket314/nextpiece`, permission *Secrets: read and write* |
+| `IG_ACCESS_TOKEN` (secret) | The token from Meta App Dashboard > Use cases > Customize > API setup with Unified login > Generate access tokens > Generate token |
+| `IG_USER_ID` (variable) | The Instagram account ID shown there under the username (17841447993083707) |
+| `SECRETS_PAT` (secret, optional) | Only for 60-day Instagram Login tokens: fine-grained GitHub token for this repo with *Secrets: read and write*, used to renew them |
+
+- **Check Instagram token** (`instagram-token.yml`) runs on the 1st and 15th: it confirms the token
+  still reaches the account (and renews 60-day tokens). If it fails, GitHub emails you; make a new
+  token in the dashboard and run `GH_TOKEN=$(gh auth token --user sprocket314) gh secret set IG_ACCESS_TOKEN -R sprocket314/nextpiece`.
+- **Check Instagram token (manual)** (`instagram-check.yml`, Actions tab > Run workflow) prints which
+  account the token reaches, its permissions and quota, and creates an unpublished test container.
+- Turn off ad blockers in the Meta dashboard: they hide its token buttons.
 
 ## Preview locally
 
@@ -215,5 +223,6 @@ If it fails, the log of its "Build with Hugo" step names the file and line.
 | `tools/build_atlas.py` | Copies the atlas data in from `burr_design/catalogue` |
 | `layouts/index.instagram.json` | `/instagram.json`: posts with Instagram-ready covers |
 | `tools/instagram_post.py` | Posts new blog posts to Instagram after each deploy |
-| `.github/workflows/instagram-token.yml` | Renews the Instagram token twice a month |
+| `.github/workflows/instagram-token.yml` | Checks the Instagram token twice a month (renews 60-day ones) |
+| `.github/workflows/instagram-check.yml` | Manual token diagnosis with an unpublished test post |
 | `assets/icons/makerworld.svg` | Generic cube icon for the MakerWorld profile link (Blowfish has none) |

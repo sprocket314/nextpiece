@@ -186,3 +186,4 @@ If it fails, the log of its "Build with Hugo" step names the file and line.
 | `layouts/partials/extend-head.html` | GoatCounter analytics script (production only) |
 | `layouts/atlas/single.html`, `assets/atlas/` | The Burr Atlas page |
 | `tools/build_atlas.py` | Copies the atlas data in from `burr_design/catalogue` |
+| `assets/icons/makerworld.svg` | Generic cube icon for the MakerWorld profile link (Blowfish has none) |

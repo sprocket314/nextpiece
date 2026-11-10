@@ -245,6 +245,9 @@ function render(){
   const mb=$('more');
   mb.hidden=out.length<=SHOWN;
   mb.textContent=`Show ${Math.min(250,out.length-SHOWN)} more (${out.length-SHOWN} hidden)`;
+  const active=SETS.reduce((n,k)=>n+STATE[k].size,0)+(STATE.shape?1:0);
+  $('fcount').textContent=active?` \u00B7 ${active}`:'';
+  $('ftoggle').classList.toggle('on',active>0);
   writeURL();
   observeThumbs();
 }
@@ -289,16 +292,7 @@ function buildFacets(){
     fms.map(([k,c])=>chip({t:FAM_LABEL[k]||k,v:k},c,STATE.fam.has(k))).join('')+`</div>`);
   h+=group('Designer',`<div class="chips" data-facet="d">`+
     TOP_DSGN.map(i=>chip({t:D.designers[i],v:i},T_dg.get(i),STATE.d.has(String(i)))).join('')+`</div>`);
-  h+=group('Find',
-    `<div class="chips">`+
-    `<input type="search" id="q" placeholder="name, designer or shape code" aria-label="Search puzzles" value="${esc(STATE.q)}">`+
-    `<select id="cubic" aria-label="Envelope shape">
-       <option value="">any envelope shape</option>
-       <option value="1">cubic only</option>
-       <option value="0">non-cubic only</option>
-     </select></div>`);
   $('facets').innerHTML=h;
-  $('cubic').value=STATE.cubic;
   wire();
 }
 function wire(){
@@ -313,11 +307,15 @@ function wire(){
       SHOWN=250; render();
     });
   });
-  const q=$('q');
-  q.addEventListener('input',()=>{STATE.q=q.value;SHOWN=250;render();});
-  const c=$('cubic');
-  c.addEventListener('change',()=>{STATE.cubic=c.value;SHOWN=250;render();});
 }
+/* controls line: wired once */
+$('q').addEventListener('input',e=>{STATE.q=e.target.value;SHOWN=250;render();});
+$('cubic').addEventListener('change',e=>{STATE.cubic=e.target.value;SHOWN=250;render();});
+$('ftoggle').addEventListener('click',()=>{
+  const open=$('facets').hidden;
+  $('facets').hidden=!open;
+  $('ftoggle').setAttribute('aria-expanded',String(open));
+});
 document.querySelectorAll('thead th[data-sort]').forEach(th=>{
   th.addEventListener('click',()=>{
     const k=th.dataset.sort;
@@ -330,14 +328,15 @@ document.querySelectorAll('thead th[data-sort]').forEach(th=>{
 $('more').addEventListener('click',()=>{SHOWN+=250;render();});
 $('clear').addEventListener('click',()=>{
   SETS.forEach(k=>STATE[k].clear());
-  STATE.q='';STATE.cubic='';STATE.shape='';SHOWN=250;buildFacets();render();});
+  STATE.q='';STATE.cubic='';STATE.shape='';SHOWN=250;
+  $('q').value='';$('cubic').value='';buildFacets();render();});
 $('copy').addEventListener('click',async()=>{
   const u=writeURL();
   try{ await navigator.clipboard.writeText(u); }catch(e){
     const t=document.createElement('textarea');t.value=u;document.body.appendChild(t);
     t.select();try{document.execCommand('copy');}catch(_){}t.remove(); }
-  const tag=$('copied');
-  tag.style.visibility='visible';setTimeout(()=>tag.style.visibility='hidden',1600);
+  const b=$('copy');
+  b.textContent='Copied \u2713';setTimeout(()=>{b.textContent='Copy link';},1600);
 });
 
 /* ---------- piece thumbnails ---------- */
@@ -367,7 +366,7 @@ function drawThumb(el){
 }
 const IO=new IntersectionObserver(es=>{
   es.forEach(e=>{ if(e.isIntersecting){ drawThumb(e.target); IO.unobserve(e.target); } });
-},{rootMargin:'260px'});
+},{root:getComputedStyle($('list')).overflowY==='auto'?$('list'):null,rootMargin:'260px'});
 function observeThumbs(){ document.querySelectorAll('.thumb:not([data-done])').forEach(t=>IO.observe(t)); }
 
 /* ---------- piece viewer ---------- */
@@ -438,5 +437,5 @@ $('rows').addEventListener('keydown',e=>{
   label();
 })();
 
-readURL(); buildFacets(); render();
+readURL(); $('q').value=STATE.q; $('cubic').value=STATE.cubic; buildFacets(); render();
 })();

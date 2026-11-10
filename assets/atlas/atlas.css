@@ -55,19 +55,15 @@ a{color:var(--accent-ink)}
 
 /* ---- header ---- */
 header{border-bottom:1px solid var(--line);background:var(--surface)}
-.head{display:flex;flex-wrap:wrap;align-items:baseline;gap:14px;padding:22px 0 16px}
+.head{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 18px;padding:12px 20px 12px}
 h1{font-size:26px;font-weight:700;letter-spacing:-.02em;margin:0;text-wrap:balance}
 .sub{color:var(--muted);font-size:13px;flex:1 1 32ch;min-width:0}
-.stats{display:flex;flex-wrap:wrap;gap:0;border-top:1px solid var(--line);margin-top:2px}
-.stat{padding:10px 18px 12px;border-right:1px solid var(--line);flex:0 0 auto}
-.stat:first-child{padding-left:0}
-.stat:last-child{border-right:none}
-.stat b{display:block;font-family:var(--mono);font-size:17px;font-weight:600;
-  font-variant-numeric:tabular-nums;letter-spacing:-.01em}
-.stat span{font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--faint)}
+.stats{display:block;margin-top:3px;color:var(--faint);font-size:12px}
+.stats b{font-family:var(--mono);font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums}
 
 /* ---- facets ---- */
-.facets{padding:16px 0 4px}
+.facets{padding:2px 20px 10px;max-height:min(55vh,560px);overflow:auto;border-top:1px solid var(--line)}
+.facets[hidden]{display:none}
 .fgroup{display:grid;grid-template-columns:132px 1fr;gap:12px;align-items:start;
   padding:9px 0;border-bottom:1px solid var(--line)}
 .flabel{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--faint);
@@ -82,17 +78,22 @@ h1{font-size:26px;font-weight:700;letter-spacing:-.02em;margin:0;text-wrap:balan
 .chip[aria-pressed="true"] .n{color:rgba(255,255,255,.72)}
 .chip:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 input[type=search],select{font:inherit;padding:5px 9px;border:1px solid var(--line2);
-  border-radius:2px;background:var(--raise);color:var(--ink);min-width:190px}
+  border-radius:2px;background:var(--raise);color:var(--ink)}
 input[type=search]:focus,select:focus{outline:2px solid var(--accent);outline-offset:-1px;border-color:var(--accent)}
 
 /* ---- results ---- */
-.bar{display:flex;flex-wrap:wrap;align-items:center;gap:12px;padding:14px 0 10px;
-  border-bottom:2px solid var(--ink)}
+.controls{background:var(--surface);border-bottom:2px solid var(--ink)}
+.bar{display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px;padding:10px 20px}
+.bar input[type=search]{flex:0 1 320px;min-width:180px}
+.ftoggle{display:inline-flex;align-items:center;gap:6px;font-weight:600}
+.ftoggle .caret::after{content:"\25BE"}
+.ftoggle[aria-expanded="true"] .caret::after{content:"\25B4"}
+.ftoggle.on{border-color:var(--accent);color:var(--accent-ink)}
+.ftoggle .fn{font-family:var(--mono);font-weight:600}
 .count{font-family:var(--mono);font-size:15px;font-weight:600;font-variant-numeric:tabular-nums}
 .count small{font-weight:400;color:var(--muted)}
 .spacer{flex:1}
-.copied{font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--accent);
-  font-weight:600;visibility:hidden}
+.copied{display:none}
 button.act{font:inherit;font-size:12.5px;padding:5px 12px;border-radius:2px;cursor:pointer;
   border:1px solid var(--line2);background:var(--raise);color:var(--ink)}
 button.act:hover{border-color:var(--accent);color:var(--accent-ink)}
@@ -183,7 +184,25 @@ td.th{width:128px}
 footer{padding:26px 0 40px;color:var(--muted);font-size:12.5px;border-top:1px solid var(--line);margin-top:26px}
 footer p{margin:0 0 8px;max-width:90ch}
 footer a{color:var(--accent-ink)}
+/* Wider than a phone: the top stays put and only the list scrolls, column titles pinned. */
+@media (min-width:721px){
+  body{display:flex;flex-direction:column;height:100vh;height:100dvh;overflow:hidden}
+  .top{flex:0 0 auto}
+  .list{flex:1 1 auto;min-height:0;overflow:auto;overscroll-behavior:contain}
+  .tablewrap{overflow:visible}
+  thead th{position:sticky;top:0;z-index:2;background:var(--paper);box-shadow:inset 0 -1px 0 var(--line)}
+}
+/* Phones: normal page scroll, with the home link and controls pinned. */
 @media (max-width:720px){
+  .top{display:contents}
+  .sitebar{position:sticky;top:0;z-index:11}
+  .controls{position:sticky;top:40px;z-index:10}
+  .bar .spacer{display:none}
+  .bar{gap:6px;padding:8px 16px}
+  .bar input[type=search]{flex:1 1 140px;min-width:0}
+  .bar select{max-width:150px}
+  .bar .act{padding:4px 9px;font-size:12px}
+  .count{font-size:12.5px}
   .fgroup{grid-template-columns:1fr;gap:5px}
   .flabel{padding-top:0}
   h1{font-size:22px}

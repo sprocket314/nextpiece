@@ -17,5 +17,7 @@ title = "Next Piece"
   headline = "What will be the next piece?"
   bio = "Burrs, interlocking kumiki, take-apart puzzles, and my own designs."
   links = [
+    { makerworld = "https://makerworld.com/en/@sprocket314" },
+    { instagram = "https://www.instagram.com/sprocket314/" },
     { github = "https://github.com/sprocket314" },
   ]

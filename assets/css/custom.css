@@ -93,3 +93,8 @@
   background: radial-gradient(circle at 50% 40%, rgb(var(--color-neutral-700)), rgb(var(--color-neutral-900)));
 }
 .np-model-hint { opacity: 0.75; white-space: nowrap; }
+
+/* ---- reading width ----
+   Blowfish caps articles at 65ch (about 80 characters a line). Widen to 80ch, about 95-100
+   characters: still comfortable to read, and far less empty space on wide screens. */
+.max-w-prose{max-width:80ch}

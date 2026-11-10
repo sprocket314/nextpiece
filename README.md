@@ -102,7 +102,8 @@ come out at a few tens of KB. If a model passes 5 MB, lower `$fn` in OpenSCAD.
 ## Burr Atlas
 
 `/atlas/` is an interactive index of every interlocking puzzle on
-[puzzlewillbeplayed.com](https://puzzlewillbeplayed.com/) (K. Kotani), classified by piece type.
+[puzzlewillbeplayed.com](https://puzzlewillbeplayed.com/) (Keiichiro Ishino), classified by piece type.
+Published with his permission (email of 2026-11-10).
 It is a standalone page, outside the theme's layout:
 
 - data: `content/atlas/data.json` and `pieces.json`, inlined into the page at build time
@@ -114,7 +115,7 @@ To refresh the data after a new crawl in `~/claude/burr_design/catalogue`:
 python3 tools/build_atlas.py
 ```
 
-Then preview and commit. The public atlas never includes Kotani's assembled-shape renders
+Then preview and commit. The public atlas does not include Ishino's assembled-shape renders
 (`shapes.png`); pieces are drawn from the polycube codes, and every puzzle links to its page
 on his site. To take the atlas down, delete `content/atlas/` and its entry in
 `config/_default/menus.en.toml`.

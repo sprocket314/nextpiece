@@ -27,7 +27,7 @@ design's geometry.
 
 | Topic | Decision |
 |---|---|
-| Burr Atlas | Published at `/atlas/` (menu: "Burr Atlas"), built from `~/claude/burr_design/catalogue` by `tools/build_atlas.py`. The data is K. Kotani's puzzlewillbeplayed.com index. The puzzle community has asked him repeatedly for permission to replicate the site (it is at risk of going offline), and the owner is emailing him directly too. Until he answers, the public atlas leaves out his assembled-shape renders, credits him, and links every puzzle to its page on his site. If he objects, take it down (README, "Burr Atlas"). Private-use wording ("send me the URL", "private research", crawl status) was removed. |
+| Burr Atlas | Published at `/atlas/` (menu: "Burr Atlas"), built from `~/claude/burr_design/catalogue` by `tools/build_atlas.py`. The data is the puzzlewillbeplayed.com index by **Keiichiro Ishino** (the site's contact, k16@chiba.email.ne.jp; earlier notes wrongly said "K. Kotani", a designer in the data). **Permission granted** by Ishino on 2026-11-10 in reply to the owner's email asking to publish the atlas on this blog, non-commercially: "That's wonderful. I have no problems at all." The page credits him and links every puzzle to its page on his site. His assembled-shape renders are still not included; adding them back is the owner's call. Private-use wording ("send me the URL", "private research", crawl status) was removed. |
 | Comments | giscus on posts (not About or the Atlas); threads in the repo's Discussions, *Announcements* category, mapped by page path. Theme follows the OS light/dark setting. |
 | Analytics | GoatCounter (code `nextpiece`), production builds only. Chosen over Cloudflare Web Analytics: no Cloudflare account needed, no cookies. |
 

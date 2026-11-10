@@ -5,7 +5,7 @@
 
 Copies data.json (one row per puzzle) and pieces.json (piece geometry) into the
 content/atlas/ page bundle, compacted. The page itself is layouts/atlas/single.html with
-assets/atlas/atlas.{css,js}. Kotani's assembled-shape renders (shapes.png) are deliberately
+assets/atlas/atlas.{css,js}. Ishino's assembled-shape renders (shapes.png) are deliberately
 NOT copied: the public atlas draws only pieces generated from the polycube codes.
 """
 import json

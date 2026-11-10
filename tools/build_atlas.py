@@ -4,7 +4,7 @@
     python3 tools/build_atlas.py [path/to/burr_design/catalogue]
 
 Copies data.json (one row per puzzle), pieces.json (piece geometry), and the sprite of
-Keiichiro Ishino's assembled-shape renders (shapes.png + shapes_index.json) into the
+Ishino Keiichiro's assembled-shape renders (shapes.png + shapes_index.json) into the
 content/atlas/ page bundle. Published with his permission (2026-11-10). The page itself is
 layouts/atlas/single.html with assets/atlas/atlas.{css,js}; Hugo converts the sprite to WebP.
 """

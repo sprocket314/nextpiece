@@ -102,7 +102,7 @@ come out at a few tens of KB. If a model passes 5 MB, lower `$fn` in OpenSCAD.
 ## Burr Atlas
 
 `/atlas/` is an interactive index of every interlocking puzzle on
-[puzzlewillbeplayed.com](https://puzzlewillbeplayed.com/) (Keiichiro Ishino), classified by piece type.
+[puzzlewillbeplayed.com](https://puzzlewillbeplayed.com/) (Ishino Keiichiro), classified by piece type.
 Published with his permission (email of 2026-11-10).
 It is a standalone page, outside the theme's layout:
 

@@ -402,7 +402,7 @@ function openSheet(uri,name){
     (undrawn?`<div class="note">${undrawn} piece(s) are listed in the classic burr-stick code. Their length and
       cross-section are exact, but the notch pattern is not drawn here rather than guessed.</div>`:'')+
     `<div class="note">Pieces are drawn from the exact polycube codes published on puzzlewillbeplayed.com;
-      the assembled image is Keiichiro Ishino's render from the same site.</div>`;
+      the assembled image is Ishino Keiichiro's render from the same site.</div>`;
   lastFocus=document.activeElement;
   ov.hidden=false; document.body.style.overflow='hidden';
   $('closeb').addEventListener('click',closeSheet);

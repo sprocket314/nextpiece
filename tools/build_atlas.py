@@ -3,7 +3,8 @@
 
     python3 tools/build_atlas.py [path/to/burr_design/catalogue]
 
-Copies data.json (one row per puzzle), pieces.json (piece geometry), and the sprite of
+Copies data.json (one row per puzzle), pieces_drawn.json as pieces.json (piece geometry, with
+decoded stick/board voxels), and the sprite of
 Ishino Keiichiro's assembled-shape renders (shapes.png + shapes_index.json) into the
 content/atlas/ page bundle. Published with his permission (2026-11-10). The page itself is
 layouts/atlas/single.html with assets/atlas/atlas.{css,js}; Hugo converts the sprite to WebP.
@@ -33,7 +34,8 @@ def write(name, obj):
 
 
 data = json.loads((SRC / "data.json").read_text())
-pieces = json.loads((SRC / "pieces.json").read_text())
+# pieces_drawn.json = pieces.json plus decoded stick/board voxels (burr_design/src/export_decoded.py)
+pieces = json.loads(((SRC / "pieces_drawn.json") if (SRC / "pieces_drawn.json").exists() else (SRC / "pieces.json")).read_text())
 F = {n: i for i, n in enumerate(data["fields"])}
 assert all(r[F["uri"]] for r in data["rows"]), "every puzzle needs its puzzlewillbeplayed.com path"
 DST.mkdir(parents=True, exist_ok=True)

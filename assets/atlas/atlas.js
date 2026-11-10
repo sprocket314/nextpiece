@@ -91,7 +91,7 @@ const BSTOCK_LABEL={stick:'stick',bar:'bar',board:'board',plate:'plate',block:'b
   'stick+':'stick +odd','bar+':'bar +odd','board+':'board +odd','plate+':'plate +odd',
   'block+':'block +odd',mixed:'mixed kit','stick?':'stick (inferred)',
   'board?':'board (inferred)','?':'unknown'};
-const IMG_LABEL={drawn:'drawn pieces',dims:'dimensions only',none:'no piece data'};
+const IMG_LABEL={drawn:'all pieces drawn',part:'some pieces drawn',dims:'dimensions only',none:'no piece data'};
 const FAM_LABEL={solid:'solid assembly','piece-burr':'stick burr',ring:'ring',
   'board-burr':'board burr',cross:'cross',traditional:'traditional',box:'box',
   chain:'chain','framed-burr':'framed burr',triangular:'triangular',knot:'knot',
@@ -273,7 +273,7 @@ function buildFacets(){
   const sks=[...T_sk.entries()].sort((a,b)=>ORD.indexOf(a[0])-ORD.indexOf(b[0]));
   h+=group('Piece stock',`<div class="chips" data-facet="stock">`+
     sks.map(([k,c])=>chip({t:BSTOCK_LABEL[k]||k,v:k},c,STATE.stock.has(k))).join('')+`</div>`);
-  const IORD=['drawn','dims','none'];
+  const IORD=['drawn','part','dims','none'];
   const ims=[...T_im.entries()].sort((a,b)=>IORD.indexOf(a[0])-IORD.indexOf(b[0]));
   h+=group('Piece drawing',`<div class="chips" data-facet="img">`+
     ims.map(([k,c])=>chip({t:IMG_LABEL[k]||k,v:k},c,STATE.img.has(k))).join('')+`</div>`);
@@ -341,8 +341,15 @@ $('copy').addEventListener('click',async()=>{
 
 /* ---------- piece thumbnails ---------- */
 const STOCKN={stick:'stick',bar:'bar',board:'board',plate:'plate',block:'block'};
+/* how each stick/board code format was checked (see burr_design/TAXONOMY.md) */
+const CHK={kaenel:'K&auml;nel code &middot; solver-checked',gk:'K&auml;nel-style code &middot; image-checked',
+  frame:'bitmap code &middot; frame-checked'};
+const CHK_TIP={kaenel:'Classic Känel number; decoded burrs reproduce the site level in BurrTools',
+  gk:'Känel layout stretched over the whole middle; matches the site drawings and every code length',
+  frame:'Middle-first bitmap; reproduces a known piece cube for cube'};
 function pieceSVG(p,u){
   if(p.t==='p') return isoSVG(decodeVox(p.w,p.h,p.d,p.x),u);
+  if(p.v) return isoSVG(decodeVox(p.vw,p.vh,p.vd,p.v),u);   // decoded stick or board
   return null;
 }
 function drawThumb(el){
@@ -382,9 +389,11 @@ function openSheet(uri,name){
   for(const p of list){
     const svg=pieceSVG(p,13);
     if(svg){
-      const dims=`${p.w}&times;${p.h}&times;${p.d}`;
+      const dims= p.t==='p' ? `${p.w}&times;${p.h}&times;${p.d}` :
+                  p.t==='b' ? `${p.L}&times;${p.s[0]}&times;${p.s[1]}` : `${p.w}&times;${p.h}&times;1`;
+      const how = p.t==='p' ? '' : `<br><span class="chk" title="${CHK_TIP[p.g]||''}">${CHK[p.g]||''}</span>`;
       cards+=`<div class="pcard">${svg}<div class="cap"><b>${p.n} cubes</b><br>${dims}`+
-             `${p.k>1?`<br>&times;${p.k}`:''}<br>${STOCKN[p.c]||p.c}</div></div>`;
+             `${p.k>1?`<br>&times;${p.k}`:''}<br>${STOCKN[p.c]||p.c}${how}</div></div>`;
     } else if(p.t==='d'){ undrawn+=p.k||1;
       cards+=`<div class="pcard"><div class="cap" style="padding:34px 0"><b>1&times;${p.w}&times;${p.h}</b><br>`+
              `board stock${p.k>1?`<br>&times;${p.k}`:''}<br><span style="color:var(--faint)">profile not drawn</span></div></div>`;
@@ -399,10 +408,12 @@ function openSheet(uri,name){
     `<h2 id="sheet-title">${esc(name)}</h2>${big}<div class="meta">${meta}<br>`+
     `<a href="${esc(SITE+uri)}" target="_blank" rel="noopener">See this puzzle on puzzlewillbeplayed.com ↗</a></div>`+
     (cards?`<div class="grid">${cards}</div>`:`<p style="color:var(--muted)">No piece geometry for this puzzle yet.</p>`)+
-    (undrawn?`<div class="note">${undrawn} piece(s) are listed in the classic burr-stick code. Their length and
-      cross-section are exact, but the notch pattern is not drawn here rather than guessed.</div>`:'')+
-    `<div class="note">Pieces are drawn from the exact polycube codes published on puzzlewillbeplayed.com;
-      the assembled image is Ishino Keiichiro's render from the same site.</div>`;
+    (undrawn?`<div class="note">${undrawn} piece(s) use a code format that is not decoded yet (3&times;3 and
+      thicker sticks, short odd-length sticks) or that decodes to a piece in more than one part. Their size is
+      exact, but the notch pattern is not drawn here rather than guessed.</div>`:'')+
+    `<div class="note">Pieces are drawn from the codes published on puzzlewillbeplayed.com: polycubes exactly,
+      sticks and boards from their decoded notch codes (the tag under each says how that code format was
+      checked). The assembled image is Ishino Keiichiro's render from the same site.</div>`;
   lastFocus=document.activeElement;
   ov.hidden=false; document.body.style.overflow='hidden';
   $('closeb').addEventListener('click',closeSheet);

@@ -117,7 +117,9 @@ To refresh the data after a new crawl in `~/claude/burr_design/catalogue`:
 python3 tools/build_atlas.py
 ```
 
-Then preview and commit. Pieces are drawn from the polycube codes; the assembled images are
+Then preview and commit. Pieces are drawn from the polycube codes and from the decoded stick and
+board notch codes (decoders, checks and code formats: `burr_design/src/stickcodes.py`,
+`burr_design/TAXONOMY.md`); the assembled images are
 Ishino's renders; every puzzle links to its page on his site. To take the atlas down, delete `content/atlas/` and its entry in
 `config/_default/menus.en.toml`.
 

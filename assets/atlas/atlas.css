@@ -209,3 +209,6 @@ footer a{color:var(--accent-ink)}
   .wrap{padding:0 16px}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+/* how a decoded stick/board code was checked */
+.chk{font-size:10px;color:var(--accent-ink);letter-spacing:.01em}

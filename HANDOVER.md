@@ -42,6 +42,8 @@ The owner writes **through Claude**, not in an editor or CMS. The routine:
    writes it in the owner's voice from their notes (no invented facts: ask when a detail is
    missing), adds photos (JPEG, about 2000 px), a `model` viewer (`tools/stl2glb.py`) and
    disassembly steps where they fit, and fills in the front matter.
+   For the first multi-part post, also uncomment the footer **Series** link in
+   `config/_default/menus.en.toml` (hidden since 2026-11-10 while there are no series).
 3. Claude previews it locally (`hugo server --buildDrafts`, launch config "hugo") and shows the
    owner; it build-checks with the CI Hugo version.
 4. **Only on the owner's explicit OK**: set `draft: false`, commit, push. The deploy publishes it

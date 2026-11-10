@@ -1,14 +1,15 @@
-# Keep the Instagram access token alive. Long-lived tokens last 60 days and can be renewed
-# for another 60 once they are a day old; this renews it twice a month and stores the new
-# one back in the IG_ACCESS_TOKEN secret.
+# Twice a month: make sure the Instagram token still works, and renew it if it is the kind
+# that expires. A failure fails the run, and GitHub emails you.
 #
-# Needs two repository secrets (see README, "Instagram"):
-#   IG_ACCESS_TOKEN  the Instagram token (generated in the Meta App Dashboard)
-#   SECRETS_PAT      a fine-grained GitHub token for this repo with "Secrets: read and write"
+# Token kinds (see README, "Instagram"):
+#   * Unified login system-user token (what this site uses, made in the Meta App Dashboard):
+#     works on graph.facebook.com with the account in the IG_USER_ID repo variable; no renewal.
+#   * Instagram Login token (60 days): renewed here and stored back in IG_ACCESS_TOKEN, which
+#     needs SECRETS_PAT, a fine-grained GitHub token with "Secrets: read and write".
 #
-# It also commits the renewal date to data/instagram_token.json. That keeps the repo active:
+# It also commits the check date to data/instagram_token.json. That keeps the repo active:
 # GitHub switches off scheduled workflows in public repos after 60 days without commits.
-name: Renew Instagram token
+name: Check Instagram token
 
 on:
   schedule:
@@ -23,70 +24,72 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  renew:
+  check:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v7
-      - name: Renew the token and store it
+      - name: Check the token (and renew it if it expires)
         env:
           IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
+          IG_USER_ID: ${{ vars.IG_USER_ID }}
           GH_TOKEN: ${{ secrets.SECRETS_PAT }}
         run: |
-          if [ -z "$IG_ACCESS_TOKEN" ] || [ -z "$GH_TOKEN" ]; then
-            echo "::notice::IG_ACCESS_TOKEN or SECRETS_PAT is not set; nothing to renew."
+          if [ -z "$IG_ACCESS_TOKEN" ]; then
+            echo "::notice::IG_ACCESS_TOKEN is not set; nothing to check."
             exit 0
           fi
-          # 1. Is the token valid at all? (Works on brand-new tokens too.)
-          me=$(curl -sS -G "https://graph.instagram.com/v27.0/me" \
-                 --data-urlencode "fields=username" \
-                 --data-urlencode "access_token=${IG_ACCESS_TOKEN}")
-          user=$(printf '%s' "$me" | jq -r '.username // empty')
-          if [ -z "$user" ]; then
-            # Not an Instagram Login token. A Facebook Page token works on graph.facebook.com
-            # and never expires, so there is nothing to renew.
-            fb=$(curl -sS -G "https://graph.facebook.com/v27.0/me" \
-                   --data-urlencode "fields=name,instagram_business_account" \
-                   --data-urlencode "access_token=${IG_ACCESS_TOKEN}")
-            if [ -n "$(printf '%s' "$fb" | jq -r '.instagram_business_account.id // empty')" ]; then
-              echo "::notice::Facebook Page token for '$(printf '%s' "$fb" | jq -r .name)'; Page tokens do not expire, nothing to renew."
+          get() { curl -sS -G "$1" --data-urlencode "access_token=${IG_ACCESS_TOKEN}" "${@:2}"; }
+          record() {
+            mkdir -p data
+            printf '{\n  "checked": "%s",\n  "kind": "%s"\n}\n' "$(date -u +%Y-%m-%d)" "$1" > data/instagram_token.json
+          }
+
+          # 1. Unified login / Facebook-side token for the configured account: no renewal.
+          if [ -n "$IG_USER_ID" ]; then
+            u=$(get "https://graph.facebook.com/v27.0/${IG_USER_ID}" --data-urlencode "fields=username" | jq -r '.username // empty')
+            if [ -n "$u" ]; then
+              echo "Token works for @${u} (Facebook-side token; these do not need renewing)."
+              record "facebook"
               exit 0
             fi
-            echo "::error::The Instagram token does not work: $(printf '%s' "$me" | jq -c '.error // "no details"')"
-            echo "::error::Generate a new token in the Meta App Dashboard and run: gh secret set IG_ACCESS_TOKEN"
+          fi
+
+          # 2. Instagram Login token: renew it (allowed once it is a day old).
+          me=$(get "https://graph.instagram.com/v27.0/me" --data-urlencode "fields=username")
+          user=$(printf '%s' "$me" | jq -r '.username // empty')
+          if [ -z "$user" ]; then
+            echo "::error::The Instagram token no longer works. Generate a new one (README, \"Instagram\") and run: gh secret set IG_ACCESS_TOKEN"
             exit 1
           fi
-          echo "Token works for @${user}."
-          # 2. Renew it. Instagram only renews tokens at least a day old, so a failure is a
-          #    warning while the token secret is under 20 days old, an error after that.
-          resp=$(curl -sS -G "https://graph.instagram.com/refresh_access_token" \
-                   --data-urlencode "grant_type=ig_refresh_token" \
-                   --data-urlencode "access_token=${IG_ACCESS_TOKEN}")
+          echo "Instagram Login token works for @${user}."
+          if [ -z "$GH_TOKEN" ]; then
+            echo "::error::This token expires after 60 days and SECRETS_PAT is not set, so it cannot be renewed automatically."
+            exit 1
+          fi
+          resp=$(get "https://graph.instagram.com/refresh_access_token" --data-urlencode "grant_type=ig_refresh_token")
           new=$(printf '%s' "$resp" | jq -r '.access_token // empty')
           if [ -z "$new" ]; then
             why=$(printf '%s' "$resp" | jq -c '.error.message // "no details"')
-            # When was the token secret last set (by you or by this workflow)?
             last=$(gh api "repos/${GITHUB_REPOSITORY}/actions/secrets/IG_ACCESS_TOKEN" --jq .updated_at)
             age=$(( ( $(date -u +%s) - $(date -u -d "$last" +%s) ) / 86400 ))
             if [ "$age" -gt 20 ]; then
               echo "::error::Could not renew the token, last set ${age} days ago (it dies at 60): ${why}"
               exit 1
             fi
-            echo "::warning::Token not renewed this time (${why}). New tokens can only be renewed after 24 hours; the next run will retry."
+            echo "::warning::Token not renewed this time (${why}). New tokens can only be renewed after 24 hours."
             exit 0
           fi
           echo "::add-mask::$new"
           gh secret set IG_ACCESS_TOKEN --repo "$GITHUB_REPOSITORY" --body "$new"
-          days=$(( $(printf '%s' "$resp" | jq -r '.expires_in') / 86400 ))
-          mkdir -p data
-          printf '{\n  "renewed": "%s",\n  "valid_days": %s\n}\n' "$(date -u +%Y-%m-%d)" "$days" > data/instagram_token.json
-          echo "Token renewed; valid for ${days} days."
-      - name: Record the renewal
+          record "instagram-login"
+          echo "Token renewed for another $(( $(printf '%s' "$resp" | jq -r '.expires_in') / 86400 )) days."
+      - name: Record the check
         run: |
           if [ -z "$(git status --porcelain -- data/instagram_token.json)" ]; then exit 0; fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add data/instagram_token.json
-          git commit -m "Record Instagram token renewal [skip ci]"
+          git commit -m "Record Instagram token check [skip ci]"
           git pull --rebase --quiet
           git push

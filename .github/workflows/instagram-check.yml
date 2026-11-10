@@ -1,0 +1,29 @@
+# Diagnose the Instagram token without revealing it: tries the Instagram and Facebook API hosts
+# and reports which one accepts the token and which Instagram account it reaches.
+# Run it by hand: Actions > "Check Instagram token" > Run workflow.
+name: Check Instagram token
+
+on:
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Probe the APIs (prints ids, names and error codes only)
+        env:
+          T: ${{ secrets.IG_ACCESS_TOKEN }}
+        run: |
+          if [ -z "$T" ]; then echo "::error::IG_ACCESS_TOKEN is not set"; exit 1; fi
+          probe() {  # label, url (token appended), jq filter for the useful part
+            out=$(curl -sS -G "$2" --data-urlencode "access_token=${T}")
+            echo "== $1"
+            printf '%s' "$out" | jq -c "if .error then {error: {code: .error.code, subcode: .error.error_subcode, type: .error.type, message: .error.message}} else ($3) end"
+          }
+          probe "Instagram host: me" "https://graph.instagram.com/v27.0/me?fields=user_id,username,account_type" '.'
+          probe "Facebook host: me" "https://graph.facebook.com/v27.0/me?fields=id,name" '.'
+          probe "Facebook host: Pages with linked Instagram" "https://graph.facebook.com/v27.0/me/accounts?fields=name,instagram_business_account%7Bid,username%7D" '[.data[]? | {page: .name, instagram: .instagram_business_account}]'
+          probe "Facebook host: assigned Instagram accounts" "https://graph.facebook.com/v27.0/me/assigned_instagram_accounts?fields=id,username" '[.data[]? | {id, username}]'
+          probe "Facebook host: token permissions" "https://graph.facebook.com/v27.0/me/permissions" '[.data[]? | select(.status=="granted") | .permission]'

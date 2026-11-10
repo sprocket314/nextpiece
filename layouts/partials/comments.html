@@ -1,0 +1,23 @@
+{{- /*
+  giscus comments (GitHub Discussions), via Blowfish's comments hook.
+  Shown where params.article.showComments is true; settings in params.toml [giscus].
+  Threads live in the repo's Discussions, "Announcements" category, one per page path.
+  The theme follows the visitor's OS light/dark setting.
+*/ -}}
+{{- with site.Params.giscus -}}
+<script src="https://giscus.app/client.js"
+  data-repo="{{ .repo }}"
+  data-repo-id="{{ .repoid }}"
+  data-category="{{ .category }}"
+  data-category-id="{{ .categoryid }}"
+  data-mapping="pathname"
+  data-strict="1"
+  data-reactions-enabled="1"
+  data-emit-metadata="0"
+  data-input-position="top"
+  data-theme="preferred_color_scheme"
+  data-lang="en"
+  data-loading="lazy"
+  crossorigin="anonymous"
+  async></script>
+{{- end -}}

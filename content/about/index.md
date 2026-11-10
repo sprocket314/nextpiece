@@ -8,6 +8,7 @@ showWordCount: false
 showTableOfContents: false
 showRelatedContent: false
 showPagination: false
+showComments: false
 ---
 
 Next Piece is about mechanical puzzles: how they are designed, how they come apart, and the

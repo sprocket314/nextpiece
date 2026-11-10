@@ -1,0 +1,105 @@
+{{- /*
+  Burr Atlas: a standalone page (no Blowfish layout; its global styles would clash).
+  Data: content/atlas/{data,pieces}.json, refreshed by tools/build_atlas.py.
+  Code: assets/atlas/atlas.{css,js}.
+*/ -}}
+<!doctype html>
+<html lang="{{ site.Language.Locale | default "en-GB" }}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{{ .Title }} · {{ site.Title }}</title>
+<meta name="description" content="{{ .Description }}">
+<link rel="canonical" href="{{ .Permalink }}">
+<link rel="icon" href="{{ "favicon.ico" | relURL }}" sizes="any">
+<link rel="apple-touch-icon" href="{{ "apple-touch-icon.png" | relURL }}">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="{{ site.Title }}">
+<meta property="og:title" content="{{ .Title }}">
+<meta property="og:description" content="{{ .Description }}">
+<meta property="og:url" content="{{ .Permalink }}">
+{{- with resources.Get "img/social-card.png" }}
+<meta property="og:image" content="{{ .Permalink }}">
+<meta name="twitter:card" content="summary_large_image">
+{{- end }}
+{{- $css := resources.Get "atlas/atlas.css" | resources.Minify | resources.Fingerprint "sha384" }}
+<link rel="stylesheet" href="{{ $css.RelPermalink }}" integrity="{{ $css.Data.Integrity }}">
+{{- partial "extend-head.html" . }}
+</head>
+<body>
+
+<nav class="sitebar" aria-label="Site">
+  <div class="wrap">
+    <a href="{{ "/" | relURL }}">← {{ site.Title }}</a><span class="sep">/</span><span>{{ .Title }}</span>
+  </div>
+</nav>
+
+<header>
+  <div class="wrap">
+    <div class="head">
+      <h1>{{ .Title }}</h1>
+      <div class="sub">Every interlocking puzzle indexed on
+        <a href="https://puzzlewillbeplayed.com/" target="_blank" rel="noopener">puzzlewillbeplayed.com</a>,
+        classified by what its pieces actually are. Filter by piece count, stock, envelope, level or
+        designer; click a puzzle's pieces to see them drawn, or its name to open it on puzzlewillbeplayed.com.
+        Every filter is kept in the address, so you can bookmark or share a view.</div>
+    </div>
+    <div class="stats">
+      <div class="stat"><b id="st-npuz">&nbsp;</b><span>puzzles</span></div>
+      <div class="stat"><b id="st-nshape">&nbsp;</b><span>distinct shapes</span></div>
+      <div class="stat"><b id="st-ndsgn">&nbsp;</b><span>designers</span></div>
+      <div class="stat"><b id="st-ngeo">&nbsp;</b><span>with piece geometry</span></div>
+      <div class="stat"><b id="st-years">&nbsp;</b><span>invention years</span></div>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="facets" id="facets" aria-label="Filters"></section>
+
+  <div class="bar">
+    <div class="count" id="count" aria-live="polite"></div>
+    <div class="spacer"></div>
+    <button class="act" id="clear" type="button">Clear all</button>
+    <button class="act primary" id="copy" type="button">Copy link to this view</button>
+    <span class="copied" id="copied">copied</span>
+  </div>
+
+  <div class="tablewrap">
+    <table>
+      <thead><tr>
+        <th>Pieces</th>
+        <th data-sort="lvl" data-dir="desc">Level</th>
+        <th data-sort="name">Puzzle</th>
+        <th data-sort="type">Type</th>
+        <th data-sort="box">Envelope</th>
+        <th data-sort="npieces">Count</th>
+        <th data-sort="stock">Piece stock</th>
+        <th data-sort="designer">Designer</th>
+        <th data-sort="year">Year</th>
+      </tr></thead>
+      <tbody id="rows"></tbody>
+    </table>
+  </div>
+  <div class="empty" id="empty" hidden>No puzzles match this combination. Loosen a filter.</div>
+  <div class="more"><button class="act" id="more" type="button" hidden></button></div>
+</main>
+
+<div class="ov" id="ov" hidden><div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-title"></div></div>
+
+<footer class="wrap">
+  <p>All puzzle data (names, designers, years, levels, envelopes and piece codes) comes from
+    <a href="https://puzzlewillbeplayed.com/" target="_blank" rel="noopener">puzzlewillbeplayed.com</a>
+    by K.&nbsp;Kotani, the reference for interlocking puzzles. Every puzzle links back to its page there.
+    The classification by piece type and the piece drawings, generated from the site's polycube codes,
+    are this atlas's own.</p>
+  <p><b>Level</b> is the number of moves needed to release the first piece. Piece geometry is
+    available for some puzzles only.</p>
+</footer>
+
+<script id="DATA" type="application/json">{{ with .Resources.Get "data.json" }}{{ .Content | safeJS }}{{ end }}</script>
+<script id="PIECES" type="application/json">{{ with .Resources.Get "pieces.json" }}{{ .Content | safeJS }}{{ end }}</script>
+{{- $js := resources.Get "atlas/atlas.js" | resources.Minify | resources.Fingerprint "sha384" }}
+<script src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}"></script>
+</body>
+</html>

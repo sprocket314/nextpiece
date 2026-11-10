@@ -99,6 +99,35 @@ Yellow, Bambu Green, Orange, Purple, ...). Options:
 `uv` installs the script's dependencies (trimesh, numpy) on first run. Blocky puzzle pieces
 come out at a few tens of KB. If a model passes 5 MB, lower `$fn` in OpenSCAD.
 
+## Burr Atlas
+
+`/atlas/` is an interactive index of every interlocking puzzle on
+[puzzlewillbeplayed.com](https://puzzlewillbeplayed.com/) (K. Kotani), classified by piece type.
+It is a standalone page, outside the theme's layout:
+
+- data: `content/atlas/data.json` and `pieces.json`, inlined into the page at build time
+- page: `layouts/atlas/single.html`, with `assets/atlas/atlas.css` and `atlas.js`
+
+To refresh the data after a new crawl in `~/claude/burr_design/catalogue`:
+
+```bash
+python3 tools/build_atlas.py
+```
+
+Then preview and commit. The public atlas never includes Kotani's assembled-shape renders
+(`shapes.png`); pieces are drawn from the polycube codes, and every puzzle links to its page
+on his site. To take the atlas down, delete `content/atlas/` and its entry in
+`config/_default/menus.en.toml`.
+
+## Comments and analytics
+
+- **Comments** use [giscus](https://giscus.app/): each post's thread is a GitHub Discussion in
+  the repo's *Announcements* category. Switch them on or off with `showComments` in
+  `config/_default/params.toml` (`[article]`), or per post with `showComments: false` in its
+  front matter. Moderate them in the repo's Discussions tab.
+- **Analytics** use [GoatCounter](https://www.goatcounter.com/): no cookies, no personal data.
+  Set `goatcounter = "CODE"` in `params.toml`; only production builds count visits.
+
 ## Preview locally
 
 ```bash
@@ -151,3 +180,7 @@ If it fails, the log of its "Build with Hugo" step names the file and line.
 | `assets/vendor/model-viewer/` | Self-hosted `<model-viewer>` 4.4.0 |
 | `assets/img/social-card.png` | Share image for pages without a cover |
 | `tools/stl2glb.py` | STL pieces to one coloured GLB |
+| `layouts/partials/comments.html` | giscus comments, via Blowfish's comments hook |
+| `layouts/partials/extend-head.html` | GoatCounter analytics script (production only) |
+| `layouts/atlas/single.html`, `assets/atlas/` | The Burr Atlas page |
+| `tools/build_atlas.py` | Copies the atlas data in from `burr_design/catalogue` |

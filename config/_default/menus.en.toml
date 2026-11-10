@@ -6,6 +6,11 @@
   weight = 10
 
 [[main]]
+  name = "Burr Atlas"
+  pageRef = "atlas"
+  weight = 15
+
+[[main]]
   name = "Puzzle types"
   pageRef = "puzzle_types"
   weight = 20

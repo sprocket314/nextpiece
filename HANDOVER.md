@@ -23,6 +23,14 @@ settled since; it wins over the brief where they differ.
 Anything in a `model` viewer can be downloaded by any visitor: publishing a GLB publishes that
 design's geometry.
 
+## Decisions (2026-11-10)
+
+| Topic | Decision |
+|---|---|
+| Burr Atlas | Published at `/atlas/` (menu: "Burr Atlas"), built from `~/claude/burr_design/catalogue` by `tools/build_atlas.py`. The data is K. Kotani's puzzlewillbeplayed.com index. The puzzle community has asked him repeatedly for permission to replicate the site (it is at risk of going offline), and the owner is emailing him directly too. Until he answers, the public atlas leaves out his assembled-shape renders, credits him, and links every puzzle to its page on his site. If he objects, take it down (README, "Burr Atlas"). Private-use wording ("send me the URL", "private research", crawl status) was removed. |
+| Comments | giscus on posts (not About or the Atlas); threads in the repo's Discussions, *Announcements* category, mapped by page path. Off until the giscus app is installed on the repo. Theme follows the OS light/dark setting. |
+| Analytics | GoatCounter, production builds only; on once the owner gives the account code. Chosen over Cloudflare Web Analytics: no Cloudflare account needed, no cookies. |
+
 ## Status (2026-11-09)
 
 Live at **https://nextpiece.co.uk**. Let's Encrypt certificate for the apex and `www`, renewed
@@ -42,8 +50,8 @@ Lessons from the switch-over:
 - The build takes its base URL from GitHub's Pages settings, so redeploy after changing the
   domain or enforcing HTTPS.
 
-Not done yet (nice-to-haves from the brief): giscus comments, analytics. Both need accounts or
-settings only the owner can create.
+Comments and analytics are wired but off (2026-11-10): they wait on the owner installing the
+giscus app on `sprocket314/nextpiece` and creating the GoatCounter account.
 
 ---
 

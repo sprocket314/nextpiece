@@ -42,6 +42,9 @@ fingerprintAlgorithm = "sha512" # Valid values are "sha512" (default), "sha384",
 giteaDefaultServer = "https://git.fsfe.org"
 forgejoDefaultServer = "https://v11.next.forgejo.org"
 
+# Analytics: GoatCounter account code (the CODE in CODE.goatcounter.com). Empty = off.
+goatcounter = ""
+
 [languageRedirect]
   enabled = false # Enable client-side language redirects for multilingual sites.
   storageKey = "blowfish_preferred_language" # localStorage key for manual language selections.
@@ -111,6 +114,7 @@ forgejoDefaultServer = "https://v11.next.forgejo.org"
   showWordCount = true
   # sharingLinks = [ "linkedin", "twitter", "bluesky", "mastodon", "reddit", "pinterest", "facebook", "email", "whatsapp", "telegram", "line"]
   showZenMode = false
+  showComments = false # giscus, see [giscus] below; turn on once the giscus app is installed on the repo
   # externalLinkForceNewTab = false # disable to allow external links in the same tab (defaults to true)
 
 [list]
@@ -161,6 +165,13 @@ forgejoDefaultServer = "https://v11.next.forgejo.org"
   groupByYear = false
   cardView = true
   cardViewScreenWidth = false
+
+# Comments: giscus (GitHub Discussions). IDs from the GitHub GraphQL API / giscus.app.
+[giscus]
+  repo = "sprocket314/nextpiece"
+  repoId = "R_kgDOVokQhA"
+  category = "Announcements"
+  categoryId = "DIC_kwDOVokQhM4DKy4u"
 
 [firebase]
   # apiKey = "XXXXXX"

@@ -122,6 +122,14 @@ def wait_for_image(url, tries=20, pause=15):
 def find_account(token):
     """Which host accepts this token, and which Instagram account does it reach?"""
     tried = []
+    known = os.environ.get("IG_USER_ID", "").strip()
+    if known:  # account ID given explicitly (repo variable): just confirm the token reaches it
+        for host in (FB_HOST, IG_HOST):
+            try:
+                me = call("GET", known, token, host, fields="username")
+                return host, known, me.get("username", "?")
+            except ApiError as e:
+                tried.append(str(e))
     try:
         me = call("GET", "me", token, IG_HOST, fields="user_id,username")
         return IG_HOST, me["user_id"], me.get("username", "?")

@@ -1,5 +1,7 @@
 # Diagnose the Instagram token without revealing it: tries the Instagram and Facebook API hosts
 # and reports which one accepts the token and which Instagram account it reaches.
+# With the repo variable IG_USER_ID set, it also creates an unpublished media container for the
+# example post's cover: proof that posting would work. Unpublished containers expire after 24 h.
 # Run it by hand: Actions > "Check Instagram token" > Run workflow.
 name: Check Instagram token
 
@@ -15,17 +17,23 @@ jobs:
       - name: Probe the APIs (prints ids, names and error codes only)
         env:
           T: ${{ secrets.IG_ACCESS_TOKEN }}
+          ID: ${{ vars.IG_USER_ID }}
         run: |
           if [ -z "$T" ]; then echo "::error::IG_ACCESS_TOKEN is not set"; exit 1; fi
+          show() { jq -c "if .error then {error: {code: .error.code, subcode: .error.error_subcode, type: .error.type, message: .error.message}} else ($1) end"; }
           probe() {  # label, url (token appended), jq filter for the useful part
-            out=$(curl -sS -G "$2" --data-urlencode "access_token=${T}")
             echo "== $1"
-            printf '%s' "$out" | jq -c "if .error then {error: {code: .error.code, subcode: .error.error_subcode, type: .error.type, message: .error.message}} else ($3) end"
+            curl -sS -G "$2" --data-urlencode "access_token=${T}" | show "$3"
           }
           probe "Instagram host: me" "https://graph.instagram.com/v27.0/me?fields=user_id,username,account_type" '.'
           probe "Facebook host: me" "https://graph.facebook.com/v27.0/me?fields=id,name" '.'
-          probe "Facebook host: as a Page token" "https://graph.facebook.com/v27.0/me?fields=name,instagram_business_account%7Bid,username%7D" '.'
-          probe "Facebook host: Pages with linked Instagram" "https://graph.facebook.com/v27.0/me/accounts?fields=name,instagram_business_account%7Bid,username%7D" '[.data[]? | {page: .name, instagram: .instagram_business_account}]'
-          probe "Facebook host: assigned Instagram accounts" "https://graph.facebook.com/v27.0/me/assigned_instagram_accounts?fields=id,username" '[.data[]? | {id, username}]'
-          probe "Token expiry (debug_token)" "https://graph.facebook.com/v27.0/debug_token?input_token=${T}" '.data | {type, application, is_valid, expires_at, data_access_expires_at, scopes}'
           probe "Facebook host: token permissions" "https://graph.facebook.com/v27.0/me/permissions" '[.data[]? | select(.status=="granted") | .permission]'
+          if [ -n "$ID" ]; then
+            probe "Facebook host: Instagram account ${ID}" "https://graph.facebook.com/v27.0/${ID}?fields=username,media_count" '.'
+            probe "Publishing quota" "https://graph.facebook.com/v27.0/${ID}/content_publishing_limit?fields=quota_usage,config" '.'
+            echo "== Create an unpublished media container (expires in 24 h, nothing is posted)"
+            img=$(curl -sS https://nextpiece.co.uk/instagram.json | jq -r '.posts[0].image')
+            curl -sS -X POST "https://graph.facebook.com/v27.0/${ID}/media" \
+              --data-urlencode "image_url=${img}" --data-urlencode "caption=Setup test, not published" \
+              --data-urlencode "access_token=${T}" | show '{container_created: .id}'
+          fi

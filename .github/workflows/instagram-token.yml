@@ -37,14 +37,34 @@ jobs:
             echo "::notice::IG_ACCESS_TOKEN or SECRETS_PAT is not set; nothing to renew."
             exit 0
           fi
+          # 1. Is the token valid at all? (Works on brand-new tokens too.)
+          me=$(curl -sS -G "https://graph.instagram.com/v27.0/me" \
+                 --data-urlencode "fields=username" \
+                 --data-urlencode "access_token=${IG_ACCESS_TOKEN}")
+          user=$(printf '%s' "$me" | jq -r '.username // empty')
+          if [ -z "$user" ]; then
+            echo "::error::The Instagram token does not work: $(printf '%s' "$me" | jq -c '.error // "no details"')"
+            echo "::error::Generate a new token in the Meta App Dashboard and run: gh secret set IG_ACCESS_TOKEN"
+            exit 1
+          fi
+          echo "Token works for @${user}."
+          # 2. Renew it. Instagram only renews tokens at least a day old, so a failure is a
+          #    warning while the token secret is under 20 days old, an error after that.
           resp=$(curl -sS -G "https://graph.instagram.com/refresh_access_token" \
                    --data-urlencode "grant_type=ig_refresh_token" \
                    --data-urlencode "access_token=${IG_ACCESS_TOKEN}")
           new=$(printf '%s' "$resp" | jq -r '.access_token // empty')
           if [ -z "$new" ]; then
-            echo "::error::Instagram refused to renew the token: $(printf '%s' "$resp" | jq -c '.error // "no details"')"
-            echo "::error::Generate a new token in the Meta App Dashboard and run: gh secret set IG_ACCESS_TOKEN"
-            exit 1
+            why=$(printf '%s' "$resp" | jq -c '.error.message // "no details"')
+            # When was the token secret last set (by you or by this workflow)?
+            last=$(gh api "repos/${GITHUB_REPOSITORY}/actions/secrets/IG_ACCESS_TOKEN" --jq .updated_at)
+            age=$(( ( $(date -u +%s) - $(date -u -d "$last" +%s) ) / 86400 ))
+            if [ "$age" -gt 20 ]; then
+              echo "::error::Could not renew the token, last set ${age} days ago (it dies at 60): ${why}"
+              exit 1
+            fi
+            echo "::warning::Token not renewed this time (${why}). New tokens can only be renewed after 24 hours; the next run will retry."
+            exit 0
           fi
           echo "::add-mask::$new"
           gh secret set IG_ACCESS_TOKEN --repo "$GITHUB_REPOSITORY" --body "$new"

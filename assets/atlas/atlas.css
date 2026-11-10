@@ -6,10 +6,11 @@
   --accent:#2E7D6B; --accent-soft:#DCEAE5; --accent-ink:#1E5A4C;
   --brass:#8F6A1E; --brass-soft:#F0E6CE;
   --walnut:#5A4536;
-  --f-top:#7FBBAA; --f-x:#4E9384; --f-z:#356C60; --piece-edge:#F7F8F5;
+  --f-top:#A8D8C9; --f-x:#55998A; --f-z:#2B5F53; --piece-edge:#12261F;
   --shadow:0 1px 2px rgba(27,31,30,.06),0 4px 14px rgba(27,31,30,.05);
   --sans:Archivo,-apple-system,BlinkMacSystemFont,"Segoe UI","Helvetica Neue",Arial,sans-serif;
   --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  color-scheme:light;
 }
 @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
   --paper:#131817; --surface:#1B2220; --raise:#232B29;
@@ -18,7 +19,7 @@
   --accent:#57BFA5; --accent-soft:#1D3833; --accent-ink:#8FD9C6;
   --brass:#C69B4C; --brass-soft:#33291447;
   --walnut:#B99878;
-  --f-top:#5FA895; --f-x:#3D7D70; --f-z:#2A5A50; --piece-edge:#151B19;
+  --f-top:#8FD3BF; --f-x:#3F8A79; --f-z:#21493F; --piece-edge:#0A0F0D;
   --shadow:0 1px 2px rgba(0,0,0,.4),0 6px 18px rgba(0,0,0,.28);
   color-scheme:dark;
 }}
@@ -29,7 +30,7 @@
   --accent:#57BFA5; --accent-soft:#1D3833; --accent-ink:#8FD9C6;
   --brass:#C69B4C; --brass-soft:#33291447;
   --walnut:#B99878;
-  --f-top:#5FA895; --f-x:#3D7D70; --f-z:#2A5A50; --piece-edge:#151B19;
+  --f-top:#8FD3BF; --f-x:#3F8A79; --f-z:#21493F; --piece-edge:#0A0F0D;
   --shadow:0 1px 2px rgba(0,0,0,.4),0 6px 18px rgba(0,0,0,.28);
   color-scheme:dark;
 }
@@ -47,6 +48,10 @@ a{color:var(--accent-ink)}
 .sitebar a{color:var(--paper);text-decoration:none;font-weight:600}
 .sitebar a:hover{text-decoration:underline}
 .sitebar .sep{opacity:.5}
+.sitebar .theme{margin-left:auto;font:inherit;font-size:12px;padding:3px 10px;border-radius:2px;cursor:pointer;
+  background:transparent;color:var(--paper);border:1px solid color-mix(in srgb,var(--paper) 35%,transparent)}
+.sitebar .theme:hover{border-color:var(--paper)}
+.sitebar .theme:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 
 /* ---- header ---- */
 header{border-bottom:1px solid var(--line);background:var(--surface)}
@@ -124,6 +129,10 @@ td.nm .ext{color:var(--faint);font-size:11px;margin-left:3px}
 .more{display:flex;justify-content:center;padding:18px 0 6px}
 .empty{padding:44px 10px;text-align:center;color:var(--muted)}
 
+/* piece drawings: one hairline per voxel face, constant width at any zoom */
+.thumb svg polygon,.pcard svg polygon{vector-effect:non-scaling-stroke;stroke-width:.8px;stroke-opacity:.7}
+.pcard svg polygon{stroke-width:1px}
+
 /* thumbnails */
 td.th{width:132px}
 .thumb{display:flex;gap:3px;align-items:flex-end;min-height:34px;cursor:pointer;
@@ -146,10 +155,10 @@ td.th{width:132px}
 .sheet h2{margin:0 0 2px;font-size:20px;letter-spacing:-.01em;padding-right:70px}
 .sheet .meta{color:var(--muted);font-size:12.5px;margin-bottom:16px}
 .sheet .meta a{color:var(--accent-ink);font-weight:600}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:14px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px}
 .pcard{border:1px solid var(--line);border-radius:3px;padding:10px;background:var(--raise);
   display:flex;flex-direction:column;align-items:center;gap:7px}
-.pcard svg{height:104px;width:100%}
+.pcard svg{height:150px;width:100%}
 .pcard .cap{font-family:var(--mono);font-size:11px;color:var(--muted);text-align:center}
 .pcard .cap b{color:var(--ink);font-weight:600}
 .closeb{position:absolute;top:16px;right:18px}

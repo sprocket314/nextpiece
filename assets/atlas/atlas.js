@@ -399,5 +399,22 @@ $('rows').addEventListener('keydown',e=>{
   if(e.key==='Enter'||e.key===' '){ e.preventDefault(); openSheet(t.dataset.uri,t.dataset.name); }
 });
 
+/* ---------- light / dark switch, shared with the blog (localStorage "appearance") ---------- */
+(function theme(){
+  const btn=$('theme'), root=document.documentElement, mq=matchMedia('(prefers-color-scheme: dark)');
+  const current=()=>root.getAttribute('data-theme')||(mq.matches?'dark':'light');
+  const label=()=>{ const dark=current()==='dark';
+    btn.textContent=dark?'\u2600 Light':'\u263E Dark';
+    btn.setAttribute('aria-pressed',String(dark)); };
+  btn.addEventListener('click',()=>{
+    const next=current()==='dark'?'light':'dark';
+    root.setAttribute('data-theme',next);
+    try{ localStorage.setItem('appearance',next); }catch(e){}
+    label();
+  });
+  mq.addEventListener('change',label);
+  label();
+})();
+
 readURL(); buildFacets(); render();
 })();

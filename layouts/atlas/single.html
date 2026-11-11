@@ -26,8 +26,8 @@
 <meta property="og:title" content="{{ .Title }}">
 <meta property="og:description" content="{{ .Description }}">
 <meta property="og:url" content="{{ .Permalink }}">
-{{- with resources.Get site.Params.defaultSocialImage }}
-<meta property="og:image" content="{{ .Permalink }}">
+{{- with site.Params.images }}
+<meta property="og:image" content="{{ index . 0 | absURL }}">
 <meta name="twitter:card" content="summary_large_image">
 {{- end }}
 {{- $css := resources.Get "atlas/atlas.css" | resources.Minify | resources.Fingerprint "sha384" }}

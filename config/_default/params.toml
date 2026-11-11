@@ -27,7 +27,11 @@ disableTextInHeader = false
 # defaultBackgroundImage = "IMAGE.jpg" # used as default for background images
 # backgroundCanvas = false # render defaultBackgroundImage as a fixed backdrop on every page
 # defaultFeaturedImage = "IMAGE.jpg" # used as default for featured images in all articles
-defaultSocialImage = "img/social-card-frankenburr.png" # in assets/; used when a page has no cover image
+# Share picture for pages without a cover (home, About, lists, Atlas), in static/img/. Set through
+# Hugo's `images` rather than Blowfish's defaultSocialImage so those pages ask for a LARGE preview
+# (twitter:card summary_large_image); defaultSocialImage only ever gives a small thumbnail.
+images = ["img/social-card-frankenburr.png"]
+# defaultSocialImage = "img/social-card.png"
 hotlinkFeatureImage = false
 # Thumbnail aspect ratio as a number (e.g., "1.5", "1.0", "1.777")
 # thumbnailAspectRatio = "1.5"

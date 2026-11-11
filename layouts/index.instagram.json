@@ -27,6 +27,16 @@
       {{- else -}}
         {{- $jpg = .Resize (printf "%dx jpg q90" .Width) -}}
       {{- end -}}
+      {{- /* The site's address across the top: a darkened, blurred band with white text. */ -}}
+      {{- with site.Params.instagram.overlay -}}
+        {{- $w := $jpg.Width -}}
+        {{- $bandH := int (math.Round (mul $w 0.09)) -}}
+        {{- $size := int (math.Round (mul $w 0.042)) -}}
+        {{- $band := ($jpg.Crop (printf "%dx%d TopLeft" $w $bandH)).Filter (images.GaussianBlur 10) (images.Brightness -55) -}}
+        {{- $font := resources.Get "fonts/DejaVuSans-Bold.ttf" -}}
+        {{- $text := images.Text . (dict "font" $font "size" $size "color" "#ffffff" "x" (div $w 2) "y" (int (math.Round (mul (sub $bandH (mul $size 1.16)) 0.5))) "alignx" "center") -}}
+        {{- $jpg = $jpg.Filter (images.Overlay $band 0 0) $text -}}
+      {{- end -}}
       {{- $items = $items | append (dict
           "slug" (path.Base (strings.TrimSuffix "/" $page.RelPermalink))
           "title" $page.Title

@@ -142,6 +142,10 @@ into Instagram's 4:5 to 1.91:1 range if needed) and a caption made of the title,
 puzzle types plus `[instagram] hashtags` in `params.toml`.
 
 - **Skip a post:** `instagram: false` in its front matter. **Own caption:** `instagram_caption:`.
+- **Address on the picture:** `overlay = "nextpiece.co.uk"` under `[instagram]` in `params.toml`
+  writes the site's address in white on a darkened band across the top of every Instagram
+  picture (font: `assets/fonts/DejaVuSans-Bold.ttf`, free licence alongside). The blog's own
+  images are untouched. Comment it out for clean pictures.
 - **Already posted** posts are listed in `data/instagram_posted.json` (the workflow commits it),
   so re-runs never post twice. Delete a post's entry there to post it again.
 - **At most 2 posts per deploy**; any others go out with the next one.
@@ -225,7 +229,8 @@ If it fails, the log of its "Build with Hugo" step names the file and line.
 | `layouts/partials/extend-head.html` | GoatCounter analytics script (production only) |
 | `layouts/atlas/single.html`, `assets/atlas/` | The Burr Atlas page |
 | `tools/build_atlas.py` | Copies the atlas data in from `burr_design/catalogue` |
-| `layouts/index.instagram.json` | `/instagram.json`: posts with Instagram-ready covers |
+| `layouts/index.instagram.json` | `/instagram.json`: posts with Instagram-ready covers, address band on top |
+| `assets/fonts/` | DejaVu Sans Bold (free licence) for the Instagram address band |
 | `tools/instagram_post.py` | Posts new blog posts to Instagram after each deploy |
 | `.github/workflows/instagram-token.yml` | Checks the Instagram token twice a month (renews 60-day ones) |
 | `.github/workflows/instagram-check.yml` | Manual token diagnosis with an unpublished test post |

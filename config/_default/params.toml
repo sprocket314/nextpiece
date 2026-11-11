@@ -177,6 +177,9 @@ goatcounter = "nextpiece"
 # after the post's own tags and puzzle types. Instagram allows 30 per post.
 [instagram]
   hashtags = ["mechanicalpuzzle", "puzzledesign", "burrpuzzle", "3dprinting"]
+  # Written across the top of every Instagram picture (not the blog's own images).
+  # Font: assets/fonts/DejaVuSans-Bold.ttf. Comment out for clean pictures.
+  overlay = "nextpiece.co.uk"
 
 [firebase]
   # apiKey = "XXXXXX"

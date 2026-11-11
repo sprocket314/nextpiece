@@ -4,7 +4,7 @@ date: 2026-11-09T12:00:00Z
 draft: false
 summary: "A classic solid six-piece burr, used to show what a puzzle post here looks like: facts box, gallery, disassembly steps and a 3D model you can turn around."
 
-designers: ["Unknown"]
+designers: []
 maker: "Not built yet: OpenSCAD renders"
 year:
 puzzle_types: ["burr"]

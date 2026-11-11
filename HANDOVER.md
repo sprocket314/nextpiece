@@ -50,6 +50,18 @@ The owner writes **through Claude**, not in an editor or CMS. The routine:
    and posts it to Instagram (cover + caption) automatically, so the OK covers both. Then Claude
    confirms the live page and the Instagram step in the run log.
 
+**Designers taxonomy (owner's decision, 2026-11-11):** a post's `designers` lists every
+designer whose puzzles it discusses or who features in it, including Carlos for his own designs,
+so a designer's page finds every post that mentions them. Reviewers, bloggers and friends who
+are not mentioned as designers are not tagged. Use the full name in the form the puzzle world
+uses (e.g. "Fumio Tsuburai"), even where the text says "Tsuburai-san". Named designers only:
+when the designer is unknown, leave `designers` empty, never a placeholder such as "Unknown"
+(removed from the example post on 2026-11-11). Caveat: the
+`puzzle-facts` box shows every `designers` term as "Designer", so on a post that uses the box,
+list only that puzzle's designers (or give the box its own field first).
+Designer pages are plain lists; a short bio can go in `content/designers/<slug>/_index.md`,
+which Blowfish shows above the list. None written yet.
+
 ## Status (2026-11-09)
 
 Live at **https://nextpiece.co.uk**. Let's Encrypt certificate for the apex and `www`, renewed

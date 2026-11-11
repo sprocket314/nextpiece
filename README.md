@@ -223,7 +223,7 @@ If it fails, the log of its "Build with Hugo" step names the file and line.
 | `layouts/partials/extend-head-uncached.html` | Loads the 3D viewer script on pages that use it |
 | `assets/css/custom.css` | Styles for the shortcodes |
 | `assets/vendor/model-viewer/` | Self-hosted `<model-viewer>` 4.4.0 |
-| `assets/img/social-card.png` | Share image for pages without a cover |
+| `assets/img/social-card-frankenburr.png` | Share image for pages without a cover: the Frankenburr from the SEPP flyer on its navy, with name, tagline and address (1200x630) |
 | `tools/stl2glb.py` | STL pieces to one coloured GLB |
 | `layouts/partials/comments.html` | giscus comments, via Blowfish's comments hook |
 | `layouts/partials/extend-head.html` | GoatCounter analytics script (production only) |

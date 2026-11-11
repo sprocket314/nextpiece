@@ -26,7 +26,7 @@
 <meta property="og:title" content="{{ .Title }}">
 <meta property="og:description" content="{{ .Description }}">
 <meta property="og:url" content="{{ .Permalink }}">
-{{- with resources.Get "img/social-card.png" }}
+{{- with resources.Get site.Params.defaultSocialImage }}
 <meta property="og:image" content="{{ .Permalink }}">
 <meta name="twitter:card" content="summary_large_image">
 {{- end }}

@@ -27,7 +27,7 @@ disableTextInHeader = false
 # defaultBackgroundImage = "IMAGE.jpg" # used as default for background images
 # backgroundCanvas = false # render defaultBackgroundImage as a fixed backdrop on every page
 # defaultFeaturedImage = "IMAGE.jpg" # used as default for featured images in all articles
-defaultSocialImage = "img/social-card.png" # in assets/; used when a page has no cover image
+defaultSocialImage = "img/social-card-frankenburr.png" # in assets/; used when a page has no cover image
 hotlinkFeatureImage = false
 # Thumbnail aspect ratio as a number (e.g., "1.5", "1.0", "1.777")
 # thumbnailAspectRatio = "1.5"

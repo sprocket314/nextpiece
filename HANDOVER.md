@@ -18,7 +18,7 @@ settled since; it wins over the brief where they differ.
 | 3D viewer | Google `<model-viewer>` 4.4.0 with GLB, **self-hosted** in `assets/vendor/model-viewer/` and loaded only on pages that use the `model` shortcode. STL to GLB with `tools/stl2glb.py`. Chosen over three.js + STLLoader because it needs no custom JS. |
 | Images | Site-level `render-image` hook and shortcodes produce resized **WebP** with lazy loading (Blowfish's own hook keeps the original format). No JPEG fallback: every current browser reads WebP. |
 | Language | `en`, with `locale = "en-GB"` |
-| Sample post | The owner will write the real posts. The sample is an explicitly labelled **example post** (a classic six-piece burr from Cutler's tabulation, so none of the owner's unpublished designs become downloadable) that proves images, taxonomies and the 3D viewer work live. Renders, not photos, for now. |
+| Sample post | The owner will write the real posts. The sample is an explicitly labelled **example post** (a classic six-piece burr from Cutler's tabulation, so none of the owner's unpublished designs become downloadable) that proves images, taxonomies and the 3D viewer work live. Renders, not photos, for now. **Deleted on 2026-11-11** (owner's decision); its files are in git history (last in `3207548`). No live page uses the `model` viewer until a post does. |
 
 Anything in a `model` viewer can be downloaded by any visitor: publishing a GLB publishes that
 design's geometry.
@@ -29,7 +29,7 @@ design's geometry.
 |---|---|
 | Burr Atlas | Published at `/atlas/` (menu: "Burr Atlas"), built from `~/claude/burr_design/catalogue` by `tools/build_atlas.py`. The data is the puzzlewillbeplayed.com index by **Ishino Keiichiro** (written family name first, as he signs; the site's contact, k16@chiba.email.ne.jp; earlier notes wrongly said "K. Kotani", a designer in the data). **Permission granted** by Ishino on 2026-11-10 in reply to the owner's email asking to publish the atlas on this blog, non-commercially: "That's wonderful. I have no problems at all." The page credits him and links every puzzle to its page on his site. His assembled-shape renders are included too (owner's decision, 2026-11-10, after the permission), served as one WebP sprite. Private-use wording ("send me the URL", "private research", crawl status) was removed. |
 | Comments | giscus on posts (not About or the Atlas); threads in the repo's Discussions, *Announcements* category, mapped by page path. Theme follows the OS light/dark setting. |
-| Instagram | Automatic posting of each new post via Meta's official API (owner's choice of option 2, 2026-11-10), not by logging in as the owner (against Instagram's terms; risks the account). Meta app *Next Piece* in business portfolio *Next Piece*, **Unified login** (Meta's current route; the Facebook-login setup is legacy, the Instagram-login setup unavailable to new apps). Token: system-user token from the dashboard, secret `IG_ACCESS_TOKEN`; account ID in repo variable `IG_USER_ID`. Verified 2026-11-10: token reaches @sprocket314 and created an unpublished test container. No renewal needed; a workflow checks it on the 1st and 15th. The owner sets secrets; Claude never handles their values. The example post is marked as skipped. The portfolio also has a second, unused system user named `sprocket314` (Develop app role, Instagram Content access, full access to the Next Piece Page, no tokens), kept by the owner's choice; posting does not use it. |
+| Instagram | Automatic posting of each new post via Meta's official API (owner's choice of option 2, 2026-11-10), not by logging in as the owner (against Instagram's terms; risks the account). Meta app *Next Piece* in business portfolio *Next Piece*, **Unified login** (Meta's current route; the Facebook-login setup is legacy, the Instagram-login setup unavailable to new apps). Token: system-user token from the dashboard, secret `IG_ACCESS_TOKEN`; account ID in repo variable `IG_USER_ID`. Verified 2026-11-10: token reaches @sprocket314 and created an unpublished test container. No renewal needed; a workflow checks it on the 1st and 15th. The owner sets secrets; Claude never handles their values. The portfolio also has a second, unused system user named `sprocket314` (Develop app role, Instagram Content access, full access to the Next Piece Page, no tokens), kept by the owner's choice; posting does not use it. |
 | Analytics | GoatCounter (code `nextpiece`), production builds only. Chosen over Cloudflare Web Analytics: no Cloudflare account needed, no cookies. |
 
 ## How posts get written (owner's decision, 2026-11-10)
@@ -50,13 +50,17 @@ The owner writes **through Claude**, not in an editor or CMS. The routine:
    and posts it to Instagram (cover + caption) automatically, so the OK covers both. Then Claude
    confirms the live page and the Instagram step in the run log.
 
+**Series of design posts (owner's decision, 2026-11-11):** after the first post, one post per
+month of design history, going through the owner's designs in the order they were made until
+caught up with the present. Put them in one `series`, and uncomment the footer Series link with
+the first of them (step 2 above). The month-by-month list lives in the gitignored `inbox/`.
+
 **Designers taxonomy (owner's decision, 2026-11-11):** a post's `designers` lists every
 designer whose puzzles it discusses or who features in it, including Carlos for his own designs,
 so a designer's page finds every post that mentions them. Reviewers, bloggers and friends who
 are not mentioned as designers are not tagged. Use the full name in the form the puzzle world
 uses (e.g. "Fumio Tsuburai"), even where the text says "Tsuburai-san". Named designers only:
-when the designer is unknown, leave `designers` empty, never a placeholder such as "Unknown"
-(removed from the example post on 2026-11-11). Caveat: the
+when the designer is unknown, leave `designers` empty, never a placeholder such as "Unknown". Caveat: the
 `puzzle-facts` box shows every `designers` term as "Designer", so on a post that uses the box,
 list only that puzzle's designers (or give the box its own field first).
 Designer pages are plain lists; a short bio can go in `content/designers/<slug>/_index.md`,

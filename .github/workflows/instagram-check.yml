@@ -1,7 +1,8 @@
 # Diagnose the Instagram token without revealing it: tries the Instagram and Facebook API hosts
 # and reports which one accepts the token and which Instagram account it reaches.
 # With the repo variable IG_USER_ID set, it also creates an unpublished media container for the
-# example post's cover: proof that posting would work. Unpublished containers expire after 24 h.
+# newest published post's cover (skipped while there is none): proof that posting would work.
+# Unpublished containers expire after 24 h.
 # Run it by hand: Actions > "Check Instagram token" > Run workflow.
 name: Check Instagram token
 
@@ -32,8 +33,12 @@ jobs:
             probe "Facebook host: Instagram account ${ID}" "https://graph.facebook.com/v27.0/${ID}?fields=username,media_count" '.'
             probe "Publishing quota" "https://graph.facebook.com/v27.0/${ID}/content_publishing_limit?fields=quota_usage,config" '.'
             echo "== Create an unpublished media container (expires in 24 h, nothing is posted)"
-            img=$(curl -sS https://nextpiece.co.uk/instagram.json | jq -r '.posts[0].image')
-            curl -sS -X POST "https://graph.facebook.com/v27.0/${ID}/media" \
-              --data-urlencode "image_url=${img}" --data-urlencode "caption=Setup test, not published" \
-              --data-urlencode "access_token=${T}" | show '{container_created: .id}'
+            img=$(curl -sS https://nextpiece.co.uk/instagram.json | jq -r '.posts[0].image // empty')
+            if [ -z "$img" ]; then
+              echo "No published post with a cover yet: skipped"
+            else
+              curl -sS -X POST "https://graph.facebook.com/v27.0/${ID}/media" \
+                --data-urlencode "image_url=${img}" --data-urlencode "caption=Setup test, not published" \
+                --data-urlencode "access_token=${T}" | show '{container_created: .id}'
+            fi
           fi

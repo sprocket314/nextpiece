@@ -11,14 +11,6 @@ showPagination: false
 showComments: false
 ---
 
-Next Piece is about mechanical puzzles: how they are designed, how they come apart, and the
-ones I like most. Expect burrs and board burrs, interlocking kumiki, sequential take-apart
-puzzles, and my own designs, from first sketch to a 3D-printed set of pieces you can turn
-around in the browser.
+Next Piece is a window into my designing process, letting you know what is coming out soon (commercially or for free) and my failed attempts where I will ask for your feedback on how to make them work.
 
-Most of my designs start in [BurrTools](https://burrtools.sourceforge.net/) and OpenSCAD and
-end up on a Bambu Lab printer.
-
-The site is built with [Hugo](https://gohugo.io/) and the
-[Blowfish](https://blowfish.page/) theme and hosted on GitHub Pages.
-New posts are announced in the [RSS feed](/index.xml).
+I will also share which puzzles I'm excited about, which ones I recently got and hopefully solved and also an opportunity for any other designer to have me as play tester of their designs and maybe, just maybe, get some sample puzzles for me to review on the blog.

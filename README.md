@@ -27,8 +27,10 @@ every front matter field explained. Then:
 
 1. Fill in the front matter. `designers`, `puzzle_types` and `tags` are lists and become
    clickable pages; blank fields are hidden from the facts box.
-2. Put the images in the same folder. Name the cover `cover.jpg` (or change `featureimage`).
-   It is the hero image, the card thumbnail and the picture shown when the link is shared.
+2. Put the images in the same folder. Name the cover `cover.jpg`. It is the hero image, the card
+   thumbnail, the Instagram picture and the picture shown when the link is shared. The share
+   picture only follows the file name (it must contain `cover`, `featured` or `thumbnail`), not
+   `featureimage`, so a cover with any other name shares the generic social card.
 3. Write. Plain Markdown images work: `![alt text](photo.jpg "Optional caption")`.
 4. Set `draft: false` when it is ready.
 
@@ -228,3 +230,4 @@ If it fails, the log of its "Build with Hugo" step names the file and line.
 | `.github/workflows/instagram-token.yml` | Checks the Instagram token twice a month (renews 60-day ones) |
 | `.github/workflows/instagram-check.yml` | Manual token diagnosis with an unpublished test post |
 | `assets/icons/makerworld.svg` | Generic cube icon for the MakerWorld profile link (Blowfish has none) |
+| `assets/icons/puzzbuzz.svg` | Generic puzzle-piece icon for the puzz.buzz collection link (Blowfish has none) |

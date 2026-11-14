@@ -38,11 +38,10 @@
 
 # Footer menu.
 
-# Add back when the first multi-part series exists:
-# [[footer]]
-#   name = "Series"
-#   pageRef = "series"
-#   weight = 10
+[[footer]]
+  name = "Series"
+  pageRef = "series"
+  weight = 10
 
 [[footer]]
   name = "RSS"

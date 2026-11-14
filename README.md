@@ -226,6 +226,7 @@ If it fails, the log of its "Build with Hugo" step names the file and line.
 | `static/img/social-card-frankenburr.png` | Share image for pages without a cover (set by `images` in `params.toml`, so previews show it large): the Frankenburr from the SEPP flyer on its navy, with name, tagline and address (1200x630) |
 | `tools/stl2glb.py` | STL pieces to one coloured GLB |
 | `layouts/partials/comments.html` | giscus comments, via Blowfish's comments hook |
+| `layouts/partials/series/series_base.html` | Series box: just the series name, each post labelled by its `series_label` (month and year, e.g. "October 2025"; "Part N" if missing), without Blowfish's "This article is part of a series." and "This Article" (re-check against the theme's copy when updating Blowfish) |
 | `layouts/partials/extend-head.html` | GoatCounter analytics script (production only) |
 | `layouts/atlas/single.html`, `assets/atlas/` | The Burr Atlas page |
 | `tools/build_atlas.py` | Copies the atlas data in from `burr_design/catalogue` |

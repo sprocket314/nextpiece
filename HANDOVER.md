@@ -44,8 +44,8 @@ The owner writes **through Claude**, not in an editor or CMS. The routine:
    writes it in the owner's voice from their notes (no invented facts: ask when a detail is
    missing), adds photos (JPEG, about 2000 px), a `model` viewer (`tools/stl2glb.py`) and
    disassembly steps where they fit, and fills in the front matter.
-   For the first multi-part post, also uncomment the footer **Series** link in
-   `config/_default/menus.en.toml` (hidden since 2026-11-10 while there are no series).
+   The footer **Series** link in `config/_default/menus.en.toml` is on since 2026-11-12, with
+   the first series post.
 3. Claude previews it locally (`hugo server --buildDrafts`, launch config "hugo") and shows the
    owner; it build-checks with the CI Hugo version.
 4. **Only on the owner's explicit OK**: set `draft: false`, commit, push. The deploy publishes it
@@ -54,8 +54,16 @@ The owner writes **through Claude**, not in an editor or CMS. The routine:
 
 **Series of design posts (owner's decision, 2026-11-11):** after the first post, one post per
 month of design history, going through the owner's designs in the order they were made until
-caught up with the present. Put them in one `series`, and uncomment the footer Series link with
-the first of them (step 2 above). The month-by-month list lives in the gitignored `inbox/`.
+caught up with the present. They share one series, **`series: ["My designs"]`** (name chosen
+2026-11-12), with `series_order` 1, 2, 3 ... in design order. It starts with **"Humble beginnings"**
+(Perseus, the owner's very first puzzle: designed late August to 31 October 2025, never released,
+so its full solution and an explorable model are shown). The month-by-month list lives in the
+gitignored `inbox/series-plan.md`; Perseus's media are made by scripts in `inbox/humble-beginnings/work/`.
+The series box shows only the series name, and labels each post with the month and year of the
+design from its `series_label` front matter, e.g. `series_label: "October 2025"` (owner's decisions,
+2026-11-12: Blowfish's "This article is part of a series." and "This Article" add nothing, and a
+month reads better than "Part 1"). Perseus is "October 2025", the month it was completed. The box is
+overridden in `layouts/partials/series/series_base.html`.
 
 **Designers taxonomy (owner's decision, 2026-11-11):** a post's `designers` lists every
 designer whose puzzles it discusses or who features in it, including Carlos for his own designs,
@@ -67,6 +75,13 @@ when the designer is unknown, leave `designers` empty, never a placeholder such 
 list only that puzzle's designers (or give the box its own field first).
 Designer pages are plain lists; a short bio can go in `content/designers/<slug>/_index.md`,
 which Blowfish shows above the list. None written yet.
+
+**MPP numbering (owner, 2026-11-12):** Allard Walker numbers his Midlands Puzzle Parties (MPP) in
+deliberately odd Roman numerals, as a little puzzle (e.g. "XXXXCIIIV MPP"). Keep them as written;
+never flag them as typos.
+
+**Dates in posts (owner, 2026-11-12):** written with ordinals, e.g. "the 31st October 2025",
+"the 30th May 2026", not "31 October 2025".
 
 ## Status (2026-11-09)
 

@@ -1,0 +1,30 @@
+{{- /*
+  Override of Blowfish v3.9.0's series box (themes/blowfish/layouts/partials/series/series_base.html).
+  Owner's decision (2026-11-12): the heading is just the series name, without "- This article is
+  part of a series."; each post is labelled by its `series_label` front matter (the month and year
+  of the design, e.g. "October 2025"; owner's choice, 2026-11-12), falling back to "Part N"; the
+  current post's label is in bold, without ": This Article".
+*/ -}}
+{{ if .Params.series }}
+  <summary
+    class="py-1 text-lg font-semibold cursor-pointer bg-primary-200 text-neutral-800 -ms-5 ps-5 dark:bg-primary-800 dark:text-neutral-100">
+    {{ index .Params.series 0 }}
+  </summary>
+  {{ $seriesName := strings.ToLower (index .Params.series 0) }}
+  {{ range $post := sort (index .Site.Taxonomies.series $seriesName) "Params.series_order" }}
+    {{ $label := $post.Params.series_label | default (printf "%s %v" (i18n "article.part") $post.Params.series_order) }}
+    {{ if eq $post.Permalink $.Page.Permalink }}
+      <div
+        class="py-1 font-semibold border-dotted border-neutral-300 border-s-1 -ms-5 ps-5 dark:border-neutral-600">
+        {{ $label }}
+      </div>
+    {{ else }}
+      <div
+        class="py-1 border-dotted border-neutral-300 border-s-1 -ms-5 ps-5 dark:border-neutral-600">
+        <a href="{{ $post.RelPermalink }}">
+          {{ $label }}: {{ $post.Title | emojify }}
+        </a>
+      </div>
+    {{ end }}
+  {{ end }}
+{{ end }}

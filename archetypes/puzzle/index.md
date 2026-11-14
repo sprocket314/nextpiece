@@ -18,6 +18,7 @@ acquired: ""                # where and when you got it, e.g. "IPP 42 exchange, 
 tags: []
 series: []                  # for multi-part posts, e.g. ["Designing a board burr"]
 series_order:               # 1, 2, 3 ... within the series
+series_label: ""            # shown in the series box instead of "Part N", e.g. "October 2025"
 featureimage: "cover.jpg"   # cover image in this folder: hero, card thumbnail and social card
 featureimagecaption: ""
 instagram: true             # false = don't post this one to Instagram
